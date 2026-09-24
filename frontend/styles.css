@@ -29,6 +29,7 @@ input:focus, select:focus { border-color: #78a68f; box-shadow: 0 0 0 3px #236b50
 .input-suffix span { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: var(--muted); font-size: 12px; }
 button { min-height: 47px; margin-top: 11px; border: 0; border-radius: 8px; background: var(--green); color: white; font: inherit; font-weight: 600; cursor: pointer; transition: background .15s, transform .15s; }
 button:hover { background: #1c5942; transform: translateY(-1px); }
+button:disabled { cursor: wait; opacity: .75; transform: none; }
 button span { margin-left: 6px; font-size: 17px; }
 .note { display: flex; gap: 8px; align-items: center; color: #87958d; font-size: 11px; margin: 16px 0 0; }
 .note span { color: #bc9551; }
