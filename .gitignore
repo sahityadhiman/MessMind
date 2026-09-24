@@ -9,6 +9,10 @@ venv/
 .env.*
 !.env.example
 
+# Local meal records (keep real data out of GitHub)
+*.db
+*.sqlite3
+
 # Editor and operating system files
 .vscode/
 .idea/

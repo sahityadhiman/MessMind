@@ -10,7 +10,7 @@ MessMind is a student meal-planning project that will help a hostel mess estimat
 
 ## Current status
 
-The frontend is an early prototype connected to the backend API. Its attendance number is still a sample calculation, not a real prediction. A database and ML model are still to come.
+The frontend is an early prototype connected to the backend API. Its attendance number is still a sample calculation, not a real prediction. The backend can save aggregate meal records in a local SQLite database. Demo records are clearly marked and must not be used for predictions; a trained prediction model is still to come.
 
 ## Open the prototype
 

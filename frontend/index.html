@@ -43,6 +43,37 @@
         <h2><span id="estimate">—</span> <small>students expected</small></h2>
         <p id="result-detail"></p>
       </section>
+
+      <section class="planner record-planner" aria-labelledby="records-title">
+        <div class="planner-heading">
+          <div><p class="eyebrow">BUILD MEAL HISTORY</p><h2 id="records-title">Meal records</h2></div>
+          <button class="secondary-button" id="fill-example" type="button">Fill demo example</button>
+        </div>
+        <p class="section-intro">Save meal totals on this computer. Demo records are marked and must not be used for real predictions.</p>
+        <form id="record-form">
+          <label for="record-date">Date</label>
+          <input id="record-date" name="meal_date" type="date" required />
+          <label for="record-meal">Meal</label>
+          <select id="record-meal" name="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select>
+          <label for="record-menu">Menu</label>
+          <input id="record-menu" name="menu" placeholder="e.g. Rice and dal" required />
+          <div class="field-grid">
+            <div><label for="record-students">Students eligible</label><input id="record-students" name="students" type="number" min="1" required /></div>
+            <div><label for="record-served">Meals served</label><input id="record-served" name="meals_served" type="number" min="0" required /></div>
+          </div>
+          <label class="demo-toggle" for="record-demo"><input id="record-demo" name="is_demo" type="checkbox" checked /> Mark this as demo data</label>
+          <button type="submit">Save meal record <span aria-hidden="true">→</span></button>
+          <p class="form-message" id="record-message" aria-live="polite"></p>
+        </form>
+        <div class="records-heading"><h3>Saved records</h3><span id="record-count">0 records</span></div>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Date</th><th>Meal and menu</th><th>Served / eligible</th><th>Type</th></tr></thead>
+            <tbody id="records-list"></tbody>
+          </table>
+          <p class="empty-records" id="records-empty">No records saved yet. Use the demo example to add a clearly labeled sample.</p>
+        </div>
+      </section>
       <footer>Made for smarter, less wasteful meals.</footer>
     </main>
     <script src="app.js"></script>
