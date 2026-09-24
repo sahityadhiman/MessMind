@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MessMind — Meal planner</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#" aria-label="MessMind home"><span class="brand-mark">M</span> MessMind</a>
+        <span class="today" id="today"></span>
+      </header>
+
+      <section class="welcome">
+        <p class="eyebrow">MESS KITCHEN DASHBOARD</p>
+        <h1>Plan today’s meal<br /><span>with less guesswork.</span></h1>
+        <p class="intro">Estimate how many students will eat, then plan the right amount of food.</p>
+      </section>
+
+      <section class="planner" aria-labelledby="planner-title">
+        <div class="planner-heading">
+          <div><p class="eyebrow">QUICK ESTIMATE</p><h2 id="planner-title">Meal details</h2></div>
+          <span class="step-badge">01 <span>/ 02</span></span>
+        </div>
+        <form id="meal-form">
+          <label for="meal">Meal</label>
+          <select id="meal" name="meal">
+            <option>Lunch</option><option>Dinner</option><option>Breakfast</option>
+          </select>
+          <label for="menu">Today’s menu</label>
+          <input id="menu" name="menu" placeholder="e.g. Rice, dal and paneer" required />
+          <label for="students">Students in the hostel</label>
+          <div class="input-suffix"><input id="students" name="students" type="number" min="1" value="800" required /><span>students</span></div>
+          <button type="submit">Estimate attendance <span aria-hidden="true">→</span></button>
+        </form>
+        <p class="note"><span aria-hidden="true">✦</span> For now, this is a sample estimate. We’ll connect the real prediction later.</p>
+      </section>
+
+      <section class="result" id="result" aria-live="polite" hidden>
+        <p class="eyebrow">SAMPLE RESULT</p>
+        <h2><span id="estimate">—</span> <small>students expected</small></h2>
+        <p id="result-detail"></p>
+      </section>
+      <footer>Made for smarter, less wasteful meals.</footer>
+    </main>
+    <script src="app.js"></script>
+  </body>
+</html>
