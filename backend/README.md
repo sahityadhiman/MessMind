@@ -18,5 +18,6 @@ When it starts, open `http://127.0.0.1:8000/` to use the webpage, or `http://127
 - `POST /predict` accepts `meal`, `menu`, and `students`, and returns a sample estimate.
 - `POST /records` saves one aggregate meal record: `meal_date`, `meal`, `menu`, `students`, and `meals_served`.
 - `GET /records` returns saved meal records.
+- `DELETE /records/{id}` removes a demo record only; real records are protected.
 
 The local database is `messmind.db`. It is ignored by Git so meal data is not uploaded to GitHub. Only enter real records if the mess or college has approved their use; do not add student names, IDs, or room numbers.

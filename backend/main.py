@@ -2,7 +2,7 @@ from pathlib import Path
 import sqlite3
 from datetime import date, datetime, timezone
 
-from fastapi import FastAPI
+from fastapi import FastAPI, HTTPException, Response
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
@@ -130,6 +130,21 @@ def list_meal_records():
         ).fetchall()
 
     return [dict(row) for row in rows]
+
+
+@app.delete("/records/{record_id}", status_code=204)
+def delete_demo_meal_record(record_id: int):
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        cursor = connection.execute(
+            "DELETE FROM meal_records WHERE id = ? AND is_demo = 1",
+            (record_id,),
+        )
+        if cursor.rowcount == 0:
+            raise HTTPException(
+                status_code=404,
+                detail="Demo record not found. Real records cannot be removed here.",
+            )
+    return Response(status_code=204)
 
 
 # Serve the webpage from this same local server so the browser can call the API.

@@ -79,7 +79,17 @@ function renderRecords(records) {
     badge.textContent = record.is_demo ? 'DEMO' : 'REAL';
     typeCell.append(badge);
 
-    row.append(dateCell, mealCell, totalsCell, typeCell);
+    const actionCell = document.createElement('td');
+    if (record.is_demo) {
+      const removeButton = document.createElement('button');
+      removeButton.className = 'remove-record';
+      removeButton.type = 'button';
+      removeButton.dataset.recordId = record.id;
+      removeButton.textContent = 'Remove';
+      actionCell.append(removeButton);
+    }
+
+    row.append(dateCell, mealCell, totalsCell, typeCell, actionCell);
     tableBody.append(row);
   }
 
@@ -93,6 +103,26 @@ async function loadRecords() {
   if (!response.ok) throw new Error('Could not load meal records.');
   renderRecords(await response.json());
 }
+
+document.querySelector('#records-list').addEventListener('click', async (event) => {
+  const button = event.target.closest('.remove-record');
+  if (!button || !window.confirm('Remove this demo record from this computer?')) return;
+
+  const message = document.querySelector('#record-message');
+  message.textContent = '';
+  message.style.color = '';
+  try {
+    const response = await fetch(`/records/${button.dataset.recordId}`, {
+      method: 'DELETE'
+    });
+    if (!response.ok) throw new Error('Could not remove that demo record.');
+    await loadRecords();
+    message.textContent = 'Demo record removed from this computer.';
+  } catch (error) {
+    message.textContent = error.message;
+    message.style.color = '#a34a3a';
+  }
+});
 
 document.querySelector('#record-form').addEventListener('submit', async (event) => {
   event.preventDefault();
