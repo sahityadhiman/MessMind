@@ -57,6 +57,8 @@ td:first-child { white-space: nowrap; }
 .record-menu { color: var(--muted); font-size: 11px; margin-top: 3px; }
 .record-type { color: #8d6b25; background: #fbf4e4; border-radius: 99px; padding: 4px 7px; font-size: 10px; font-weight: 700; white-space: nowrap; }
 .record-type.real { color: var(--green); background: #eff6f1; }
+.edit-record { min-height: 28px; margin: 0; padding: 0 8px; background: transparent; color: var(--green); font-size: 10px; }
+.edit-record:hover { background: #eff6f1; color: #1c5942; transform: none; }
 .remove-record { min-height: 28px; margin: 0; padding: 0 8px; background: transparent; color: #9a5b50; font-size: 10px; }
 .remove-record:hover { background: #fbefed; color: #8b4034; transform: none; }
 .empty-records { color: #89968f; font-size: 12px; padding: 5px 7px; }

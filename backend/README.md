@@ -21,6 +21,7 @@ When it starts, open `http://127.0.0.1:8000/` for the student estimate page, `ht
 
 - `POST /predict` accepts `meal`, `menu`, and `students`, and uses up to the 30 latest real records for the same meal. It returns a message instead of a number when no real records are available.
 - `POST /records` saves one aggregate meal record: `meal_date`, `meal`, `menu`, `students`, and `meals_served`.
+- `PUT /records/{id}` lets authorized staff correct a saved record while keeping its DEMO or REAL type unchanged.
 - `GET /records` returns saved meal records.
 - `DELETE /records/{id}` removes a demo record only; real records are protected.
 

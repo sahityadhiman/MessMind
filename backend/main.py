@@ -89,13 +89,20 @@ class MealPredictionResponse(BaseModel):
     message: str
 
 
-class MealRecordRequest(BaseModel):
+class MealRecordFields(BaseModel):
     meal_date: date
     meal: str = Field(min_length=1, max_length=30)
     menu: str = Field(min_length=1, max_length=200)
     students: int = Field(gt=0, le=100_000)
     meals_served: int = Field(ge=0, le=100_000)
+
+
+class MealRecordRequest(MealRecordFields):
     is_demo: bool = False
+
+
+class MealRecordUpdate(MealRecordFields):
+    pass
 
 
 class MealRecordResponse(MealRecordRequest):
@@ -211,6 +218,68 @@ def create_meal_record(
         record_id = cursor.lastrowid
 
     return MealRecordResponse(id=record_id, **record.model_dump())
+
+
+@app.put("/records/{record_id}", response_model=MealRecordResponse)
+def update_meal_record(
+    record_id: int, record: MealRecordUpdate, _staff: str = Depends(require_staff)
+):
+    if record.meals_served > record.students:
+        raise HTTPException(
+            status_code=400,
+            detail="Meals served cannot be greater than students eligible.",
+        )
+
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        existing = connection.execute(
+            "SELECT is_demo FROM meal_records WHERE id = ?", (record_id,)
+        ).fetchone()
+        if existing is None:
+            raise HTTPException(status_code=404, detail="Meal record not found.")
+
+        is_demo = existing[0]
+        duplicate = connection.execute(
+            """
+            SELECT id
+            FROM meal_records
+            WHERE meal_date = ?
+              AND LOWER(meal) = LOWER(?)
+              AND is_demo = ?
+              AND id != ?
+            LIMIT 1
+            """,
+            (record.meal_date.isoformat(), record.meal, is_demo, record_id),
+        ).fetchone()
+        if duplicate:
+            record_type = "demo" if is_demo else "real"
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    f"A {record_type} {record.meal.lower()} record already exists "
+                    f"for {record.meal_date.isoformat()}. Each date and meal can "
+                    "only be entered once."
+                ),
+            )
+
+        connection.execute(
+            """
+            UPDATE meal_records
+            SET meal_date = ?, meal = ?, menu = ?, students = ?, meals_served = ?
+            WHERE id = ?
+            """,
+            (
+                record.meal_date.isoformat(),
+                record.meal,
+                record.menu,
+                record.students,
+                record.meals_served,
+                record_id,
+            ),
+        )
+
+    return MealRecordResponse(
+        id=record_id, is_demo=bool(is_demo), **record.model_dump()
+    )
 
 
 @app.get("/records", response_model=list[MealRecordResponse])

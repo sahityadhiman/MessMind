@@ -1,6 +1,16 @@
+const recordForm = document.querySelector('#record-form');
 const recordDate = document.querySelector('#record-date');
 const message = document.querySelector('#record-message');
 const tableBody = document.querySelector('#records-list');
+const demoCheckbox = document.querySelector('#record-demo');
+const demoLabel = document.querySelector('#record-demo-label');
+const formTitle = document.querySelector('#records-title');
+const submitButton = document.querySelector('#record-submit');
+const cancelButton = document.querySelector('#cancel-edit');
+const exampleButton = document.querySelector('#fill-example');
+
+let editingRecordId = null;
+let savedRecords = [];
 
 function setToday() {
   const localDate = new Date();
@@ -33,6 +43,13 @@ function renderRecords(records) {
     typeCell.append(badge);
 
     const actionCell = document.createElement('td');
+    const editButton = document.createElement('button');
+    editButton.className = 'edit-record';
+    editButton.type = 'button';
+    editButton.dataset.recordId = record.id;
+    editButton.textContent = 'Edit';
+    actionCell.append(editButton);
+
     if (record.is_demo) {
       const removeButton = document.createElement('button');
       removeButton.className = 'remove-record';
@@ -54,42 +71,76 @@ function renderRecords(records) {
 async function loadRecords() {
   const response = await fetch('/records');
   if (!response.ok) throw new Error('Could not load meal records. Check staff sign-in.');
-  renderRecords(await response.json());
+  savedRecords = await response.json();
+  renderRecords(savedRecords);
 }
 
-document.querySelector('#fill-example').addEventListener('click', () => {
+function resetRecordForm() {
+  editingRecordId = null;
+  recordForm.reset();
+  setToday();
+  demoCheckbox.disabled = false;
+  demoLabel.textContent = 'Mark this as demo data';
+  formTitle.textContent = 'Add a meal record';
+  submitButton.innerHTML = 'Save meal record <span aria-hidden="true">→</span>';
+  cancelButton.hidden = true;
+  exampleButton.hidden = false;
+}
+
+function startEditing(record) {
+  editingRecordId = record.id;
+  recordDate.value = record.meal_date;
+  document.querySelector('#record-meal').value = record.meal;
+  document.querySelector('#record-menu').value = record.menu;
+  document.querySelector('#record-students').value = record.students;
+  document.querySelector('#record-served').value = record.meals_served;
+  demoCheckbox.checked = record.is_demo;
+  demoCheckbox.disabled = true;
+  demoLabel.textContent = record.is_demo
+    ? 'DEMO type (fixed while editing)'
+    : 'REAL type (fixed while editing)';
+  formTitle.textContent = 'Correct a meal record';
+  submitButton.innerHTML = 'Update meal record <span aria-hidden="true">→</span>';
+  cancelButton.hidden = false;
+  exampleButton.hidden = true;
+  message.textContent = record.is_demo
+    ? 'Editing a demo record. It will still be ignored by estimates.'
+    : 'Editing a real record. The corrected totals will affect future estimates.';
+  message.style.color = '';
+  recordForm.scrollIntoView({ behavior: 'smooth', block: 'center' });
+}
+
+exampleButton.addEventListener('click', () => {
   setToday();
   document.querySelector('#record-meal').value = 'Lunch';
   document.querySelector('#record-menu').value = 'DEMO: dal, rice, chapati';
   document.querySelector('#record-students').value = 800;
   document.querySelector('#record-served').value = 640;
-  document.querySelector('#record-demo').checked = true;
+  demoCheckbox.checked = true;
   message.textContent = 'Example filled in. These numbers are fake demo data.';
   message.style.color = '';
 });
 
-document.querySelector('#record-form').addEventListener('submit', async (event) => {
+recordForm.addEventListener('submit', async (event) => {
   event.preventDefault();
-  const form = event.currentTarget;
-  const button = form.querySelector('button[type="submit"]');
-  const originalButtonText = button.innerHTML;
+  const editing = editingRecordId !== null;
   const record = {
     meal_date: recordDate.value,
     meal: document.querySelector('#record-meal').value,
     menu: document.querySelector('#record-menu').value.trim(),
     students: Number(document.querySelector('#record-students').value),
-    meals_served: Number(document.querySelector('#record-served').value),
-    is_demo: document.querySelector('#record-demo').checked
+    meals_served: Number(document.querySelector('#record-served').value)
   };
+  if (!editing) record.is_demo = demoCheckbox.checked;
 
-  button.disabled = true;
-  button.textContent = 'Saving…';
+  submitButton.disabled = true;
+  submitButton.textContent = editing ? 'Updating…' : 'Saving…';
   message.textContent = '';
   message.style.color = '';
 
   try {
-    const response = await fetch('/records', {
-      method: 'POST',
+    const response = await fetch(editing ? `/records/${editingRecordId}` : '/records', {
+      method: editing ? 'PUT' : 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(record)
     });
@@ -101,29 +152,45 @@ document.querySelector('#record-form').addEventListener('submit', async (event) 
       throw new Error(detail || 'Could not save this record.');
     }
 
-    message.textContent = savedRecord.is_demo
-      ? 'Demo record saved locally. It will not affect estimates.'
-      : 'Verified meal record saved locally. It can affect future estimates.';
+    message.textContent = editing
+      ? `${savedRecord.is_demo ? 'Demo' : 'Real'} meal record updated.`
+      : savedRecord.is_demo
+        ? 'Demo record saved locally. It will not affect estimates.'
+        : 'Verified meal record saved locally. It can affect future estimates.';
     await loadRecords();
-    form.reset();
-    setToday();
+    resetRecordForm();
   } catch (error) {
     message.textContent = error.message;
     message.style.color = '#a34a3a';
   } finally {
-    button.disabled = false;
-    button.innerHTML = originalButtonText;
+    submitButton.disabled = false;
+    submitButton.innerHTML = editingRecordId !== null
+      ? 'Update meal record <span aria-hidden="true">→</span>'
+      : 'Save meal record <span aria-hidden="true">→</span>';
   }
 });
 
+cancelButton.addEventListener('click', () => {
+  resetRecordForm();
+  message.textContent = 'Editing canceled; the saved record was not changed.';
+  message.style.color = '';
+});
+
 tableBody.addEventListener('click', async (event) => {
-  const button = event.target.closest('.remove-record');
-  if (!button || !window.confirm('Remove this demo record from this computer?')) return;
+  const editButton = event.target.closest('.edit-record');
+  if (editButton) {
+    const record = savedRecords.find((item) => item.id === Number(editButton.dataset.recordId));
+    if (record) startEditing(record);
+    return;
+  }
+
+  const removeButton = event.target.closest('.remove-record');
+  if (!removeButton || !window.confirm('Remove this demo record from this computer?')) return;
 
   message.textContent = '';
   message.style.color = '';
   try {
-    const response = await fetch(`/records/${button.dataset.recordId}`, {
+    const response = await fetch(`/records/${removeButton.dataset.recordId}`, {
       method: 'DELETE'
     });
     if (!response.ok) throw new Error('Could not remove that demo record.');
