@@ -28,3 +28,7 @@ When it starts, open `http://127.0.0.1:8000/` for the student estimate page, `ht
 The local database is `messmind.db`. It is ignored by Git so meal data is not uploaded to GitHub. Only enter real records if the mess or college has approved their use; do not add student names, IDs, or room numbers.
 
 The student-facing page does not expose record entry. The staff page and record APIs require the configured staff login. This setup is for local development; do not deploy it over plain HTTP. HTTP Basic credentials require HTTPS when used over a network.
+
+## Before hosting online
+
+The app can use `MESSMIND_DATABASE_PATH` to place its SQLite file in a persistent storage folder. Hosting storage must persist across restarts and redeploys before you enter real meal records online. Some free hosts erase local database files when they restart or go idle. Set `MESSMIND_ADMIN_USERNAME` and `MESSMIND_ADMIN_PASSWORD` as private host environment variables, and use HTTPS. Keep real records local until persistent storage and the college or mess approval are ready.

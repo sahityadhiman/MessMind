@@ -16,7 +16,10 @@ FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
 load_dotenv(BACKEND_DIR / ".env")
 
 app = FastAPI(title="MessMind API", version="0.1.0")
-DATABASE_PATH = BACKEND_DIR / "messmind.db"
+DATABASE_PATH = Path(
+    os.getenv("MESSMIND_DATABASE_PATH", str(BACKEND_DIR / "messmind.db"))
+)
+DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 staff_auth = HTTPBasic()
 
 
