@@ -169,6 +169,28 @@ def create_meal_record(
         )
 
     with sqlite3.connect(DATABASE_PATH) as connection:
+        duplicate = connection.execute(
+            """
+            SELECT id
+            FROM meal_records
+            WHERE meal_date = ?
+              AND LOWER(meal) = LOWER(?)
+              AND is_demo = ?
+            LIMIT 1
+            """,
+            (record.meal_date.isoformat(), record.meal, int(record.is_demo)),
+        ).fetchone()
+        if duplicate:
+            record_type = "demo" if record.is_demo else "real"
+            raise HTTPException(
+                status_code=409,
+                detail=(
+                    f"A {record_type} {record.meal.lower()} record already exists "
+                    f"for {record.meal_date.isoformat()}. Each date and meal can "
+                    "only be entered once."
+                ),
+            )
+
         cursor = connection.execute(
             """
             INSERT INTO meal_records
