@@ -14,10 +14,16 @@ from fastapi.staticfiles import StaticFiles
 BACKEND_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
 load_dotenv(BACKEND_DIR / ".env")
+IS_VERCEL_DEPLOYMENT = os.getenv("VERCEL") == "1"
 
 app = FastAPI(title="MessMind API", version="0.1.0")
+DEFAULT_DATABASE_PATH = (
+    Path("/tmp/messmind.db")
+    if IS_VERCEL_DEPLOYMENT
+    else BACKEND_DIR / "messmind.db"
+)
 DATABASE_PATH = Path(
-    os.getenv("MESSMIND_DATABASE_PATH", str(BACKEND_DIR / "messmind.db"))
+    os.getenv("MESSMIND_DATABASE_PATH", str(DEFAULT_DATABASE_PATH))
 )
 DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 staff_auth = HTTPBasic()
@@ -173,6 +179,14 @@ def predict_attendance(request: MealPredictionRequest):
 def create_meal_record(
     record: MealRecordRequest, _staff: str = Depends(require_staff)
 ):
+    if IS_VERCEL_DEPLOYMENT and not record.is_demo:
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "Real attendance entry is disabled on this demo deployment until "
+                "permanent database storage is connected."
+            ),
+        )
     if record.meals_served > record.students:
         raise HTTPException(
             status_code=400,
@@ -241,6 +255,14 @@ def update_meal_record(
             raise HTTPException(status_code=404, detail="Meal record not found.")
 
         is_demo = existing[0]
+        if IS_VERCEL_DEPLOYMENT and not is_demo:
+            raise HTTPException(
+                status_code=503,
+                detail=(
+                    "Real attendance editing is disabled on this demo deployment "
+                    "until permanent database storage is connected."
+                ),
+            )
         duplicate = connection.execute(
             """
             SELECT id

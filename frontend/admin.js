@@ -155,8 +155,8 @@ recordForm.addEventListener('submit', async (event) => {
     message.textContent = editing
       ? `${savedRecord.is_demo ? 'Demo' : 'Real'} meal record updated.`
       : savedRecord.is_demo
-        ? 'Demo record saved locally. It will not affect estimates.'
-        : 'Verified meal record saved locally. It can affect future estimates.';
+        ? 'Demo record saved on this server. It will not affect estimates and may reset after a restart.'
+        : 'Verified meal record saved. It can affect future estimates.';
     await loadRecords();
     resetRecordForm();
   } catch (error) {
@@ -185,7 +185,7 @@ tableBody.addEventListener('click', async (event) => {
   }
 
   const removeButton = event.target.closest('.remove-record');
-  if (!removeButton || !window.confirm('Remove this demo record from this computer?')) return;
+  if (!removeButton || !window.confirm('Remove this demo record?')) return;
 
   message.textContent = '';
   message.style.color = '';
@@ -195,7 +195,7 @@ tableBody.addEventListener('click', async (event) => {
     });
     if (!response.ok) throw new Error('Could not remove that demo record.');
     await loadRecords();
-    message.textContent = 'Demo record removed locally.';
+    message.textContent = 'Demo record removed.';
   } catch (error) {
     message.textContent = error.message;
     message.style.color = '#a34a3a';

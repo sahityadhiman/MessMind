@@ -29,6 +29,8 @@ The local database is `messmind.db`. It is ignored by Git so meal data is not up
 
 The student-facing page does not expose record entry. The staff page and record APIs require the configured staff login. This setup is for local development; do not deploy it over plain HTTP. HTTP Basic credentials require HTTPS when used over a network.
 
+On Vercel, the demo database is placed in `/tmp`, which is temporary storage. The deployed app blocks adding or editing REAL records there; DEMO records may reset after restarts. A permanent hosted database must be connected before real data collection can be enabled.
+
 ## Before hosting online
 
 The app can use `MESSMIND_DATABASE_PATH` to place its SQLite file in a persistent storage folder. Hosting storage must persist across restarts and redeploys before you enter real meal records online. Some free hosts erase local database files when they restart or go idle. Set `MESSMIND_ADMIN_USERNAME` and `MESSMIND_ADMIN_PASSWORD` as private host environment variables, and use HTTPS. Keep real records local until persistent storage and the college or mess approval are ready.
