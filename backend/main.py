@@ -1,7 +1,6 @@
 from pathlib import Path
 import os
 import secrets
-import sqlite3
 from datetime import date, datetime, timezone
 
 from dotenv import load_dotenv
@@ -10,6 +9,19 @@ from fastapi.responses import FileResponse
 from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
+from sqlalchemy import (
+    Boolean,
+    Date,
+    DateTime,
+    Integer,
+    String,
+    create_engine,
+    inspect,
+    select,
+    func,
+    text,
+)
+from sqlalchemy.orm import DeclarativeBase, Mapped, Session, mapped_column
 
 BACKEND_DIR = Path(__file__).resolve().parent
 FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
@@ -17,16 +29,66 @@ load_dotenv(BACKEND_DIR / ".env")
 IS_VERCEL_DEPLOYMENT = os.getenv("VERCEL") == "1"
 
 app = FastAPI(title="MessMind API", version="0.1.0")
-DEFAULT_DATABASE_PATH = (
-    Path("/tmp/messmind.db")
-    if IS_VERCEL_DEPLOYMENT
-    else BACKEND_DIR / "messmind.db"
+DATABASE_URL = (
+    os.getenv("DATABASE_URL", "").strip()
+    or os.getenv("POSTGRES_URL", "").strip()
 )
-DATABASE_PATH = Path(
-    os.getenv("MESSMIND_DATABASE_PATH", str(DEFAULT_DATABASE_PATH))
+if DATABASE_URL.startswith("postgres://"):
+    DATABASE_URL = DATABASE_URL.replace("postgres://", "postgresql+psycopg://", 1)
+elif DATABASE_URL.startswith("postgresql://"):
+    DATABASE_URL = DATABASE_URL.replace(
+        "postgresql://", "postgresql+psycopg://", 1
+    )
+
+if DATABASE_URL:
+    engine = create_engine(DATABASE_URL, pool_pre_ping=True, pool_size=1, max_overflow=0)
+else:
+    DEFAULT_DATABASE_PATH = (
+        Path("/tmp/messmind.db")
+        if IS_VERCEL_DEPLOYMENT
+        else BACKEND_DIR / "messmind.db"
+    )
+    DATABASE_PATH = Path(
+        os.getenv("MESSMIND_DATABASE_PATH", str(DEFAULT_DATABASE_PATH))
+    )
+    DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    engine = create_engine(
+        f"sqlite+pysqlite:///{DATABASE_PATH.as_posix()}",
+        connect_args={"check_same_thread": False},
+    )
+
+ALLOW_REAL_RECORDS = (
+    not IS_VERCEL_DEPLOYMENT
+    or (
+        bool(DATABASE_URL)
+        and os.getenv("MESSMIND_ENABLE_REAL_RECORDS", "").strip().lower()
+        in {"1", "true", "yes"}
+    )
 )
-DATABASE_PATH.parent.mkdir(parents=True, exist_ok=True)
 staff_auth = HTTPBasic()
+
+
+class Base(DeclarativeBase):
+    pass
+
+
+class MealRecord(Base):
+    __tablename__ = "meal_records"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    meal_date: Mapped[date] = mapped_column(Date, nullable=False)
+    meal: Mapped[str] = mapped_column(String(30), nullable=False)
+    menu: Mapped[str] = mapped_column(String(200), nullable=False)
+    students: Mapped[int] = mapped_column(Integer, nullable=False)
+    meals_served: Mapped[int] = mapped_column(Integer, nullable=False)
+    is_demo: Mapped[bool] = mapped_column(
+        Boolean, nullable=False, default=True, server_default=text("TRUE")
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        nullable=False,
+        default=lambda: datetime.now(timezone.utc),
+    )
 
 
 def require_staff(credentials: HTTPBasicCredentials = Depends(staff_auth)):
@@ -54,28 +116,16 @@ def require_staff(credentials: HTTPBasicCredentials = Depends(staff_auth)):
 
 
 def initialize_database():
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        connection.execute(
-            """
-            CREATE TABLE IF NOT EXISTS meal_records (
-                id INTEGER PRIMARY KEY AUTOINCREMENT,
-                meal_date TEXT NOT NULL,
-                meal TEXT NOT NULL,
-                menu TEXT NOT NULL,
-                students INTEGER NOT NULL,
-                meals_served INTEGER NOT NULL,
-                is_demo INTEGER NOT NULL DEFAULT 1,
-                created_at TEXT NOT NULL
-            )
-            """
-        )
+    Base.metadata.create_all(engine)
+    if engine.dialect.name == "sqlite":
         existing_columns = {
-            row[1] for row in connection.execute("PRAGMA table_info(meal_records)")
+            column["name"] for column in inspect(engine).get_columns("meal_records")
         }
         if "is_demo" not in existing_columns:
-            connection.execute(
-                "ALTER TABLE meal_records ADD COLUMN is_demo INTEGER NOT NULL DEFAULT 1"
-            )
+            with engine.begin() as connection:
+                connection.exec_driver_sql(
+                    "ALTER TABLE meal_records ADD COLUMN is_demo BOOLEAN NOT NULL DEFAULT 1"
+                )
 
 
 initialize_database()
@@ -131,17 +181,16 @@ def staff_admin_page(_staff: str = Depends(require_staff)):
 @app.post("/predict", response_model=MealPredictionResponse)
 def predict_attendance(request: MealPredictionRequest):
     # Use recent records for this meal only. Demo rows are never prediction data.
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        history = connection.execute(
-            """
-            SELECT students, meals_served
-            FROM meal_records
-            WHERE is_demo = 0 AND LOWER(meal) = LOWER(?)
-            ORDER BY meal_date DESC, id DESC
-            LIMIT 30
-            """,
-            (request.meal,),
-        ).fetchall()
+    with Session(engine) as session:
+        history = session.execute(
+            select(MealRecord.students, MealRecord.meals_served)
+            .where(
+                MealRecord.is_demo.is_(False),
+                func.lower(MealRecord.meal) == request.meal.lower(),
+            )
+            .order_by(MealRecord.meal_date.desc(), MealRecord.id.desc())
+            .limit(30)
+        ).all()
 
     if not history:
         return MealPredictionResponse(
@@ -179,12 +228,12 @@ def predict_attendance(request: MealPredictionRequest):
 def create_meal_record(
     record: MealRecordRequest, _staff: str = Depends(require_staff)
 ):
-    if IS_VERCEL_DEPLOYMENT and not record.is_demo:
+    if IS_VERCEL_DEPLOYMENT and not ALLOW_REAL_RECORDS and not record.is_demo:
         raise HTTPException(
             status_code=503,
             detail=(
-                "Real attendance entry is disabled on this demo deployment until "
-                "permanent database storage is connected."
+                "Real attendance entry is disabled until permanent storage is "
+                "connected and verified-record collection is explicitly enabled."
             ),
         )
     if record.meals_served > record.students:
@@ -193,18 +242,16 @@ def create_meal_record(
             detail="Meals served cannot be greater than students eligible.",
         )
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        duplicate = connection.execute(
-            """
-            SELECT id
-            FROM meal_records
-            WHERE meal_date = ?
-              AND LOWER(meal) = LOWER(?)
-              AND is_demo = ?
-            LIMIT 1
-            """,
-            (record.meal_date.isoformat(), record.meal, int(record.is_demo)),
-        ).fetchone()
+    with Session(engine) as session:
+        duplicate = session.scalar(
+            select(MealRecord.id)
+            .where(
+                MealRecord.meal_date == record.meal_date,
+                func.lower(MealRecord.meal) == record.meal.lower(),
+                MealRecord.is_demo.is_(record.is_demo),
+            )
+            .limit(1)
+        )
         if duplicate:
             record_type = "demo" if record.is_demo else "real"
             raise HTTPException(
@@ -216,23 +263,14 @@ def create_meal_record(
                 ),
             )
 
-        cursor = connection.execute(
-            """
-            INSERT INTO meal_records
-                (meal_date, meal, menu, students, meals_served, is_demo, created_at)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
-            """,
-            (
-                record.meal_date.isoformat(),
-                record.meal,
-                record.menu,
-                record.students,
-                record.meals_served,
-                int(record.is_demo),
-                datetime.now(timezone.utc).isoformat(),
-            ),
+        saved_record = MealRecord(
+            **record.model_dump(),
+            created_at=datetime.now(timezone.utc),
         )
-        record_id = cursor.lastrowid
+        session.add(saved_record)
+        session.commit()
+        session.refresh(saved_record)
+        record_id = saved_record.id
 
     return MealRecordResponse(id=record_id, **record.model_dump())
 
@@ -247,34 +285,30 @@ def update_meal_record(
             detail="Meals served cannot be greater than students eligible.",
         )
 
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        existing = connection.execute(
-            "SELECT is_demo FROM meal_records WHERE id = ?", (record_id,)
-        ).fetchone()
+    with Session(engine) as session:
+        existing = session.get(MealRecord, record_id)
         if existing is None:
             raise HTTPException(status_code=404, detail="Meal record not found.")
 
-        is_demo = existing[0]
-        if IS_VERCEL_DEPLOYMENT and not is_demo:
+        is_demo = existing.is_demo
+        if IS_VERCEL_DEPLOYMENT and not ALLOW_REAL_RECORDS and not is_demo:
             raise HTTPException(
                 status_code=503,
                 detail=(
-                    "Real attendance editing is disabled on this demo deployment "
-                    "until permanent database storage is connected."
+                    "Real attendance editing is disabled until permanent storage "
+                    "is connected and verified-record collection is explicitly enabled."
                 ),
             )
-        duplicate = connection.execute(
-            """
-            SELECT id
-            FROM meal_records
-            WHERE meal_date = ?
-              AND LOWER(meal) = LOWER(?)
-              AND is_demo = ?
-              AND id != ?
-            LIMIT 1
-            """,
-            (record.meal_date.isoformat(), record.meal, is_demo, record_id),
-        ).fetchone()
+        duplicate = session.scalar(
+            select(MealRecord.id)
+            .where(
+                MealRecord.meal_date == record.meal_date,
+                func.lower(MealRecord.meal) == record.meal.lower(),
+                MealRecord.is_demo.is_(is_demo),
+                MealRecord.id != record_id,
+            )
+            .limit(1)
+        )
         if duplicate:
             record_type = "demo" if is_demo else "real"
             raise HTTPException(
@@ -286,21 +320,12 @@ def update_meal_record(
                 ),
             )
 
-        connection.execute(
-            """
-            UPDATE meal_records
-            SET meal_date = ?, meal = ?, menu = ?, students = ?, meals_served = ?
-            WHERE id = ?
-            """,
-            (
-                record.meal_date.isoformat(),
-                record.meal,
-                record.menu,
-                record.students,
-                record.meals_served,
-                record_id,
-            ),
-        )
+        existing.meal_date = record.meal_date
+        existing.meal = record.meal
+        existing.menu = record.menu
+        existing.students = record.students
+        existing.meals_served = record.meals_served
+        session.commit()
 
     return MealRecordResponse(
         id=record_id, is_demo=bool(is_demo), **record.model_dump()
@@ -309,34 +334,40 @@ def update_meal_record(
 
 @app.get("/records", response_model=list[MealRecordResponse])
 def list_meal_records(_staff: str = Depends(require_staff)):
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        connection.row_factory = sqlite3.Row
-        rows = connection.execute(
-            """
-            SELECT id, meal_date, meal, menu, students, meals_served
-                 , is_demo
-            FROM meal_records
-            ORDER BY meal_date DESC, id DESC
-            """
-        ).fetchall()
+    with Session(engine) as session:
+        records = session.scalars(
+            select(MealRecord).order_by(
+                MealRecord.meal_date.desc(), MealRecord.id.desc()
+            )
+        ).all()
 
-    return [dict(row) for row in rows]
+    return [
+        {
+            "id": record.id,
+            "meal_date": record.meal_date,
+            "meal": record.meal,
+            "menu": record.menu,
+            "students": record.students,
+            "meals_served": record.meals_served,
+            "is_demo": record.is_demo,
+        }
+        for record in records
+    ]
 
 
 @app.delete("/records/{record_id}", status_code=204)
 def delete_demo_meal_record(
     record_id: int, _staff: str = Depends(require_staff)
 ):
-    with sqlite3.connect(DATABASE_PATH) as connection:
-        cursor = connection.execute(
-            "DELETE FROM meal_records WHERE id = ? AND is_demo = 1",
-            (record_id,),
-        )
-        if cursor.rowcount == 0:
+    with Session(engine) as session:
+        record = session.get(MealRecord, record_id)
+        if record is None or not record.is_demo:
             raise HTTPException(
                 status_code=404,
                 detail="Demo record not found. Real records cannot be removed here.",
             )
+        session.delete(record)
+        session.commit()
     return Response(status_code=204)
 
 

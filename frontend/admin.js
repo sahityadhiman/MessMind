@@ -155,7 +155,7 @@ recordForm.addEventListener('submit', async (event) => {
     message.textContent = editing
       ? `${savedRecord.is_demo ? 'Demo' : 'Real'} meal record updated.`
       : savedRecord.is_demo
-        ? 'Demo record saved on this server. It will not affect estimates and may reset after a restart.'
+        ? 'Demo record saved. It will not affect estimates.'
         : 'Verified meal record saved. It can affect future estimates.';
     await loadRecords();
     resetRecordForm();

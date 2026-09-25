@@ -16,7 +16,7 @@ The student page only requests an estimate. Approved meal totals are entered thr
 
 ## Vercel demo deployment
 
-Vercel can host this FastAPI app and its frontend. The Vercel version currently uses temporary demo storage, so demo records may reset after the server restarts. Real record creation and editing are disabled on Vercel until a permanent database is connected. Do not enter or share real attendance data on the demo deployment.
+Vercel can host this FastAPI app and its frontend. Until permanent storage is connected, it uses temporary demo storage, so demo records may reset after the server restarts. Real record creation and editing remain disabled on Vercel until permanent storage is connected and verified-record collection is explicitly enabled. Do not enter or share real attendance data on the demo deployment.
 
 To deploy, push this repository to GitHub, import the `MessMind` repository at [vercel.com/new](https://vercel.com/new), then set these private project environment variables before deploying:
 
@@ -24,6 +24,8 @@ To deploy, push this repository to GitHub, import the `MessMind` repository at [
 - `MESSMIND_ADMIN_PASSWORD` — a strong password you choose; do not put it in GitHub or send it in chat
 
 Vercel will use the root `requirements.txt` and `pyproject.toml` to locate the FastAPI app. The local development database remains `backend/messmind.db` and is not uploaded to GitHub.
+
+To add permanent storage, connect Neon Postgres from the Vercel Marketplace. The integration adds a `DATABASE_URL` environment variable, which the app uses instead of its temporary SQLite file. Keep `MESSMIND_ENABLE_REAL_RECORDS` unset or `false` until the mess or college approves collection; set it to `true` only after approval.
 
 ## Open the prototype
 
