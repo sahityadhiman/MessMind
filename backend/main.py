@@ -48,9 +48,11 @@ class MealPredictionResponse(BaseModel):
     meal: str
     menu: str
     students: int
-    students_expected: int
-    attendance_rate: float
-    is_sample: bool = True
+    students_expected: int | None
+    attendance_rate: float | None
+    records_used: int
+    is_sample: bool = False
+    message: str
 
 
 class MealRecordRequest(BaseModel):
@@ -73,14 +75,47 @@ def health_check():
 
 @app.post("/predict", response_model=MealPredictionResponse)
 def predict_attendance(request: MealPredictionRequest):
-    # Temporary baseline until the team adds real attendance data and an ML model.
-    attendance_rate = 0.82
+    # Use recent records for this meal only. Demo rows are never prediction data.
+    with sqlite3.connect(DATABASE_PATH) as connection:
+        history = connection.execute(
+            """
+            SELECT students, meals_served
+            FROM meal_records
+            WHERE is_demo = 0 AND LOWER(meal) = LOWER(?)
+            ORDER BY meal_date DESC, id DESC
+            LIMIT 30
+            """,
+            (request.meal,),
+        ).fetchall()
+
+    if not history:
+        return MealPredictionResponse(
+            meal=request.meal,
+            menu=request.menu,
+            students=request.students,
+            students_expected=None,
+            attendance_rate=None,
+            records_used=0,
+            message=(
+                "No real attendance records are available for this meal yet. "
+                "Add approved real records to get a history-based estimate."
+            ),
+        )
+
+    total_students = sum(row[0] for row in history)
+    total_meals_served = sum(row[1] for row in history)
+    attendance_rate = total_meals_served / total_students
     return MealPredictionResponse(
         meal=request.meal,
         menu=request.menu,
         students=request.students,
         students_expected=round(request.students * attendance_rate),
         attendance_rate=attendance_rate,
+        records_used=len(history),
+        message=(
+            f"Rough estimate from the last {len(history)} real "
+            f"{request.meal.lower()} meal records."
+        ),
     )
 
 
