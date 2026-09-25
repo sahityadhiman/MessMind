@@ -163,8 +163,6 @@ MessMind/
 
 **@sahityadhiman**
 
-*(No contributor list was found in the project files — add your preferred display name and any teammates who worked on this version.)*
-
 ---
 
 ## ⭐ Support
