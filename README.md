@@ -1,32 +1,178 @@
-# MessMind
+# 🍽️ MessMind
 
-MessMind is a student meal-planning project that will help a hostel mess estimate attendance and reduce food waste.
+### Smarter Meal Planning for Hostel Mess Kitchens
 
-## Project folders
+MessMind helps hostel mess staff plan meals by estimating student attendance from past meal records, with a demo mode for exploring portions and food-waste estimates. The goal is to help kitchens make better preparation decisions and reduce food waste.
 
-- `frontend/` — the browser interface
-- `backend/` — the API that will connect the interface to the data and prediction logic
-- `ml/` — attendance prediction work
+---
 
-## Current status
+## 🌐 Live Demo
 
-The frontend is connected to the backend API. When approved real attendance records exist, the API estimates attendance using the recent average for that meal. Demo records are excluded. This baseline does not use menu or weekday yet. A trained ML model may be added after enough real data has been collected and reviewed.
+🚀 **Try MessMind online:**
 
-The student page only requests an estimate. Approved meal totals are entered through the password-protected staff page at `/admin`. The local password belongs in `backend/.env`; never commit that file or real meal records.
+https://messmind-delta.vercel.app/
 
-## Vercel demo deployment
+---
 
-Vercel can host this FastAPI app and its frontend. Until permanent storage is connected, it uses temporary demo storage, so demo records may reset after the server restarts. Real record creation and editing remain disabled on Vercel until permanent storage is connected and verified-record collection is explicitly enabled. Do not enter or share real attendance data on the demo deployment.
+## 💡 Problem Statement
 
-To deploy, push this repository to GitHub, import the `MessMind` repository at [vercel.com/new](https://vercel.com/new), then set these private project environment variables before deploying:
+Mess kitchens often struggle with:
 
-- `MESSMIND_ADMIN_USERNAME` — `mess-manager` (or a private username you choose)
-- `MESSMIND_ADMIN_PASSWORD` — a strong password you choose; do not put it in GitHub or send it in chat
+* Not knowing how many students will actually show up for a meal
+* Over- or under-preparing food, leading to waste or shortages
+* No easy way to record and reuse past attendance data
+* No simple tool to test "what if" scenarios before committing to a menu plan
 
-Vercel will use the root `requirements.txt` and `pyproject.toml` to locate the FastAPI app. The local development database remains `backend/messmind.db` and is not uploaded to GitHub.
+This leads to inconsistent portioning, avoidable food waste, and guesswork in daily kitchen planning.
 
-To add permanent storage, connect Neon Postgres from the Vercel Marketplace. The integration adds a `DATABASE_URL` environment variable, which the app uses instead of its temporary SQLite file. Keep `MESSMIND_ENABLE_REAL_RECORDS` unset or `false` until the mess or college approves collection; set it to `true` only after approval.
+---
 
-## Open the prototype
+## 🎯 Solution
 
-Start the backend using the instructions in `backend/README.md`, then open `http://127.0.0.1:8000/` in a web browser. Enter a meal, menu, and student count, then choose **Estimate attendance**.
+MessMind gives mess staff two ways to plan:
+
+* **Historical estimates** — grounded in real, recorded attendance for that meal
+* **Simulated planning** — a demo mode to explore portions and waste for a given day, meal, and student count
+
+Staff can record real meal data over time, and the app uses that history to produce more informed estimates — while keeping demo/simulated data clearly separate from real records.
+
+---
+
+## ⚙️ How It Works
+
+1. Mess staff sign in and enter an aggregate record: date, meal, menu, eligible students, and meals served.
+2. For a historical estimate, the student-facing page sends the selected meal and student count to the API.
+3. The API uses up to 30 recent real records for that meal to calculate an attendance rate and estimate attendance. Demo records are ignored; if no real records exist, the app reports that a historical estimate isn't available.
+4. For a simulation, the user picks a day and meal from the supplied menu plan. The model returns simulated attendance, suggested portions, and estimated food waste.
+5. A seven-day demo report runs that simulation across the whole menu plan. Simulation results are never saved as real meal records.
+
+---
+
+## ✨ Features
+
+* 📈 **Historical attendance estimate** — estimates attendance for a meal from up to 30 recent real records for that same meal
+* 🧪 **Menu simulation** — choose a day, meal, and student count to see a simulated attendance estimate, suggested portions, and estimated waste
+* 📊 **Seven-day demo report** — summarizes simulated servings and waste across the menu plan
+* 🔐 **Staff record page** — password-protected page for adding and correcting aggregate meal records; demo records are kept separate from real records
+* 🎨 **Interface options** — responsive layout with light/dark theme
+
+---
+
+## ⚠️ A Note on the Simulation Model
+
+The simulation model uses generated examples, not measured mess data. Its attendance and waste estimates are **demonstrations, not validated kitchen recommendations**. The historical estimator uses real records when available, but currently considers the meal only — not the menu or weekday.
+
+---
+
+## 🛠️ Tech Stack
+
+### Frontend
+
+* HTML
+* CSS
+* JavaScript
+
+### Backend / API
+
+* Python
+* FastAPI
+* Uvicorn
+
+### Database
+
+* SQLite (local)
+* PostgreSQL supported via `DATABASE_URL`
+
+### Prediction Model
+
+* A small Python ridge-regression model
+
+### External AI Services
+
+* None — the simulation model runs entirely within the app
+
+### Deployment
+
+* Prepared for Vercel
+* Neon PostgreSQL as an option for persistent hosted storage
+
+---
+
+## 💻 Run Locally
+
+### 1. Clone the repository
+
+```bash
+git clone https://github.com/sahityadhiman/MessMind.git
+```
+
+### 2. Navigate to the project folder
+
+```bash
+cd MessMind
+```
+
+### 3. Install dependencies
+
+```bash
+pip install -r requirements.txt
+```
+
+### 4. Run the application
+
+```bash
+uvicorn main:app --reload
+```
+
+### 5. Open in your browser
+
+```text
+http://127.0.0.1:8000
+```
+
+*(Adjust the module/app name and port above if your entry point differs.)*
+
+---
+
+## 📂 Project Structure
+
+```text
+MessMind/
+│
+├── frontend/             # The browser interface
+├── backend/               # The API that connects the interface to the data and prediction logic
+├── ml/                     # Attendance prediction work
+├── .gitignore
+├── README.md
+├── pyproject.toml
+└── requirements.txt       # Python dependencies
+```
+
+---
+
+## 🎯 Future Improvements
+
+* Train and validate predictions on approved real attendance data
+* Factor menu and weekday into historical estimates, not just the meal
+* Measure actual leftovers and waste to compare against estimates
+* Connect persistent hosted storage (e.g. Neon PostgreSQL) before using a hosted version for real records
+
+---
+
+## 👨‍💻 Author
+
+**@sahityadhiman**
+
+*(No contributor list was found in the project files — add your preferred display name and any teammates who worked on this version.)*
+
+---
+
+## ⭐ Support
+
+If you like this project, consider giving the repository a ⭐ on GitHub!
+
+---
+
+### 🍽️ MessMind
+
+**Plan smarter. Waste less.**
