@@ -153,7 +153,8 @@ def predict_attendance(request: MealPredictionRequest):
         records_used=len(history),
         message=(
             f"Rough estimate from the last {len(history)} real "
-            f"{request.meal.lower()} meal records."
+            f"{request.meal.lower()} meal records. Menu and weekday are not "
+            "included yet."
         ),
     )
 

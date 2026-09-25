@@ -1,6 +1,6 @@
 # MessMind backend
 
-This API estimates attendance from the recent average of approved real records for the same meal and saves aggregate meal records in a local SQLite database. It ignores demo records and reports when no real history is available. It does not use a trained ML model yet.
+This API estimates attendance from the recent average of approved real records for the same meal and saves aggregate meal records in a local SQLite database. It ignores demo records and reports when no real history is available. The baseline does not use menu or weekday yet, and it is not a trained ML model.
 
 ## Start it on Windows
 
