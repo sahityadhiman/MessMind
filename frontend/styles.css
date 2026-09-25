@@ -61,4 +61,8 @@ td:first-child { white-space: nowrap; }
 .remove-record:hover { background: #fbefed; color: #8b4034; transform: none; }
 .empty-records { color: #89968f; font-size: 12px; padding: 5px 7px; }
 footer { color: #99a59e; text-align: center; font-size: 11px; padding-top: 25px; }
+.staff-link { color: #82938a; margin-left: 8px; text-decoration: none; }
+.staff-link:hover { color: var(--green); text-decoration: underline; }
+.admin-note { color: #74847d; font-size: 12px; line-height: 1.6; margin: -8px 0 18px; }
+.admin-record-table { margin-top: 14px; }
 @media (max-width: 520px) { .app-shell { width: min(100% - 28px, 680px); padding-top: 18px; } .welcome { padding-top: 43px; } .planner, .result { padding: 20px; } .today { font-size: 11px; } }

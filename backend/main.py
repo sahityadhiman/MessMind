@@ -1,13 +1,47 @@
 from pathlib import Path
+import os
+import secrets
 import sqlite3
 from datetime import date, datetime, timezone
 
-from fastapi import FastAPI, HTTPException, Response
+from dotenv import load_dotenv
+from fastapi import Depends, FastAPI, HTTPException, Response
+from fastapi.responses import FileResponse
+from fastapi.security import HTTPBasic, HTTPBasicCredentials
 from pydantic import BaseModel, Field
 from fastapi.staticfiles import StaticFiles
 
+BACKEND_DIR = Path(__file__).resolve().parent
+FRONTEND_DIR = BACKEND_DIR.parent / "frontend"
+load_dotenv(BACKEND_DIR / ".env")
+
 app = FastAPI(title="MessMind API", version="0.1.0")
-DATABASE_PATH = Path(__file__).resolve().parent / "messmind.db"
+DATABASE_PATH = BACKEND_DIR / "messmind.db"
+staff_auth = HTTPBasic()
+
+
+def require_staff(credentials: HTTPBasicCredentials = Depends(staff_auth)):
+    expected_username = os.getenv("MESSMIND_ADMIN_USERNAME", "mess-manager")
+    expected_password = os.getenv("MESSMIND_ADMIN_PASSWORD", "")
+    if not expected_password:
+        raise HTTPException(
+            status_code=503,
+            detail="Staff access is not configured. Set it in backend/.env first.",
+        )
+
+    username_matches = secrets.compare_digest(
+        credentials.username.encode("utf-8"), expected_username.encode("utf-8")
+    )
+    password_matches = secrets.compare_digest(
+        credentials.password.encode("utf-8"), expected_password.encode("utf-8")
+    )
+    if not (username_matches and password_matches):
+        raise HTTPException(
+            status_code=401,
+            detail="Incorrect staff username or password.",
+            headers={"WWW-Authenticate": "Basic"},
+        )
+    return credentials.username
 
 
 def initialize_database():
@@ -61,7 +95,7 @@ class MealRecordRequest(BaseModel):
     menu: str = Field(min_length=1, max_length=200)
     students: int = Field(gt=0, le=100_000)
     meals_served: int = Field(ge=0, le=100_000)
-    is_demo: bool = True
+    is_demo: bool = False
 
 
 class MealRecordResponse(MealRecordRequest):
@@ -71,6 +105,11 @@ class MealRecordResponse(MealRecordRequest):
 @app.get("/health")
 def health_check():
     return {"status": "ok", "message": "MessMind API is running"}
+
+
+@app.get("/admin", include_in_schema=False)
+def staff_admin_page(_staff: str = Depends(require_staff)):
+    return FileResponse(FRONTEND_DIR / "admin.html")
 
 
 @app.post("/predict", response_model=MealPredictionResponse)
@@ -120,10 +159,10 @@ def predict_attendance(request: MealPredictionRequest):
 
 
 @app.post("/records", response_model=MealRecordResponse, status_code=201)
-def create_meal_record(record: MealRecordRequest):
+def create_meal_record(
+    record: MealRecordRequest, _staff: str = Depends(require_staff)
+):
     if record.meals_served > record.students:
-        from fastapi import HTTPException
-
         raise HTTPException(
             status_code=400,
             detail="Meals served cannot be greater than students eligible.",
@@ -152,7 +191,7 @@ def create_meal_record(record: MealRecordRequest):
 
 
 @app.get("/records", response_model=list[MealRecordResponse])
-def list_meal_records():
+def list_meal_records(_staff: str = Depends(require_staff)):
     with sqlite3.connect(DATABASE_PATH) as connection:
         connection.row_factory = sqlite3.Row
         rows = connection.execute(
@@ -168,7 +207,9 @@ def list_meal_records():
 
 
 @app.delete("/records/{record_id}", status_code=204)
-def delete_demo_meal_record(record_id: int):
+def delete_demo_meal_record(
+    record_id: int, _staff: str = Depends(require_staff)
+):
     with sqlite3.connect(DATABASE_PATH) as connection:
         cursor = connection.execute(
             "DELETE FROM meal_records WHERE id = ? AND is_demo = 1",
@@ -182,6 +223,5 @@ def delete_demo_meal_record(record_id: int):
     return Response(status_code=204)
 
 
-# Serve the webpage from this same local server so the browser can call the API.
-FRONTEND_DIR = Path(__file__).resolve().parent.parent / "frontend"
+# Serve the student page from this same local server so it can call the API.
 app.mount("/", StaticFiles(directory=FRONTEND_DIR, html=True), name="frontend")
