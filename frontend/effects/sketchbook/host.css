@@ -1,0 +1,64 @@
+.sketchbook-background {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--canvas);
+}
+
+.sketchbook-background::after {
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: var(--sketchbook-wash);
+  content: "";
+  pointer-events: none;
+}
+
+.app-shell {
+  position: relative;
+  z-index: 1;
+  pointer-events: none;
+}
+
+.app-shell > * {
+  pointer-events: auto;
+}
+
+.sketchbook,
+.sketchbook__frame {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.sketchbook {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--canvas);
+  transform: translateY(-clamp(38px, 9vh, 72px));
+}
+
+.sketchbook__frame {
+  border: 0;
+  opacity: 0;
+  background: #ece7dc;
+  transition: opacity 180ms ease-out;
+}
+
+.sketchbook__frame.is-ready {
+  opacity: 1;
+}
+
+@media (max-width: 520px) {
+  :root:not([data-theme="dark"]) {
+    --sketchbook-wash: rgba(245, 247, 243, 0.2);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sketchbook__frame {
+    transition: none;
+  }
+}

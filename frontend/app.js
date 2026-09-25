@@ -1,3 +1,27 @@
+const themeToggle = document.querySelector('#theme-toggle');
+if (themeToggle) {
+  const themeLabel = document.querySelector('#theme-label');
+  const syncThemeControl = (theme) => {
+    const nextTheme = theme === 'dark' ? 'light' : 'dark';
+    themeToggle.setAttribute('aria-pressed', String(theme === 'dark'));
+    themeToggle.setAttribute('aria-label', `Switch to ${nextTheme} mode`);
+    themeToggle.title = `Switch to ${nextTheme} mode`;
+    themeLabel.textContent = nextTheme === 'dark' ? 'Dark' : 'Light';
+  };
+
+  syncThemeControl(document.documentElement.dataset.theme || 'light');
+  themeToggle.addEventListener('click', () => {
+    const nextTheme = document.documentElement.dataset.theme === 'dark' ? 'light' : 'dark';
+    document.documentElement.dataset.theme = nextTheme;
+    syncThemeControl(nextTheme);
+    try {
+      localStorage.setItem('messmind-theme', nextTheme);
+    } catch {
+      // The selected mode still works for this page if storage is unavailable.
+    }
+  });
+}
+
 const date = new Date();
 document.querySelector('#today').textContent = new Intl.DateTimeFormat('en', {
   weekday: 'short', month: 'short', day: 'numeric'

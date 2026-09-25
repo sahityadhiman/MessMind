@@ -5,12 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MessMind — Meal planner</title>
     <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="effects/sketchbook/threeui.css" />
+    <link rel="stylesheet" href="effects/sketchbook/host.css" />
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('messmind-theme');
+        document.documentElement.dataset.theme = savedTheme ||
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
   </head>
   <body>
+    <div class="sketchbook-background" data-sketchbook-mount></div>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="MessMind home"><span class="brand-mark">M</span> MessMind</a>
-        <span class="today" id="today"></span>
+        <a class="brand" href="#" aria-label="MessMind home">
+          <span class="brand-mark" aria-hidden="true">
+            <svg viewBox="0 0 40 40" focusable="false">
+              <path class="mark-stem" d="M20 23V10" />
+              <path class="mark-leaf" d="M20 17c-4.6-.5-7-3.2-7.5-7.4 4.8.1 7.4 2.5 7.5 7.4Z" />
+              <path class="mark-leaf mark-leaf-light" d="M20 14c.8-4.1 3.5-6.3 7.7-6.7-.2 4.5-2.8 6.8-7.7 6.7Z" />
+              <path class="mark-bowl" d="M10 23h20c-.8 6.1-4.1 9.2-10 9.2S10.8 29.1 10 23Z" />
+              <path class="mark-rim" d="M9 22.5h22" />
+            </svg>
+          </span>
+          <span class="brand-word">Mess<span>Mind</span></span>
+        </a>
+        <div class="topbar-actions">
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <path d="M20.2 15.1A8.3 8.3 0 0 1 8.9 3.8 8.4 8.4 0 1 0 20.2 15.1Z" />
+            </svg>
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+              <circle cx="12" cy="12" r="3.6" />
+              <path d="M12 2v2.1M12 19.9V22M4.93 4.93l1.48 1.48m11.18 11.18 1.48 1.48M2 12h2.1m15.8 0H22M4.93 19.07l1.48-1.48M17.59 6.41l1.48-1.48" />
+            </svg>
+            <span id="theme-label">Dark</span>
+          </button>
+          <span class="today" id="today"></span>
+        </div>
       </header>
 
       <section class="welcome">
@@ -33,7 +68,7 @@
           <input id="menu" name="menu" placeholder="e.g. Rice, dal and paneer" required />
           <label for="students">Students in the hostel</label>
           <div class="input-suffix"><input id="students" name="students" type="number" min="1" value="800" required /><span>students</span></div>
-          <button type="submit">Estimate attendance <span aria-hidden="true">→</span></button>
+          <button class="estimate-button" type="submit">Estimate attendance <span aria-hidden="true">→</span></button>
         </form>
         <p class="note"><span aria-hidden="true">✦</span> Uses approved real records for the same meal. Menu and weekday are not part of the estimate yet; demo records are ignored.</p>
       </section>
@@ -47,5 +82,6 @@
       <footer>Made for smarter, less wasteful meals. <a class="staff-link" href="/admin">Mess staff</a></footer>
     </main>
     <script src="app.js"></script>
+    <script type="module" src="effects/sketchbook/mount.js"></script>
   </body>
 </html>
