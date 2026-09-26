@@ -1,0 +1,217 @@
+scenario_week,weekday,meal,meal_time,menu,students_eligible,attendance_rate_simulated,meals_served_simulated,portions_prepared_simulated,food_waste_kg_simulated
+1,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.6981,698,745,44.28
+1,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8391,839,930,94.77
+1,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.4905,491,535,24.49
+1,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7962,796,855,48.6
+1,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7431,743,801,52.84
+1,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8692,869,931,72.31
+1,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.448,448,495,25.3
+1,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7886,789,853,56.57
+1,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.6932,693,769,59.52
+1,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8348,835,906,87.8
+1,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4453,445,493,29.76
+1,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7667,767,824,64.57
+1,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6969,697,752,55.89
+1,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8234,823,907,78.4
+1,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.463,463,503,25.08
+1,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7227,723,768,54.39
+1,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7029,703,776,55.69
+1,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.7854,785,837,56.61
+1,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4427,443,486,27.22
+1,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7443,744,800,57.13
+1,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6714,671,743,45.93
+1,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7806,781,865,76.35
+1,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4032,403,439,24.01
+1,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7056,706,781,73.75
+1,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6973,697,741,39.58
+1,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4337,434,470,26.33
+1,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.6881,688,754,66.86
+2,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.6897,690,750,58.57
+2,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8516,852,926,88.2
+2,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.4962,496,529,29.18
+2,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7327,733,793,64.44
+2,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7075,707,773,44.09
+2,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8676,868,950,79.23
+2,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.5082,508,545,33.11
+2,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7469,747,811,52.38
+2,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7414,741,787,47.72
+2,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8345,835,901,60.49
+2,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4973,497,532,17.89
+2,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7914,791,875,73.17
+2,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6705,670,735,47.96
+2,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8399,840,914,63.83
+2,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4784,478,518,21.16
+2,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7398,740,786,47.0
+2,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7091,709,782,64.2
+2,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8093,809,875,81.3
+2,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4529,453,493,19.58
+2,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.758,758,839,81.05
+2,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6663,666,720,35.49
+2,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7652,765,844,75.74
+2,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4303,430,458,24.0
+2,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7191,719,767,64.42
+2,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.681,681,726,38.17
+2,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4203,420,446,20.34
+2,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.6891,689,740,61.76
+3,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.7402,740,797,40.58
+3,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8433,843,908,72.09
+3,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.4548,455,500,18.39
+3,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7582,758,834,73.18
+3,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7449,745,798,38.91
+3,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8414,841,915,66.17
+3,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.4793,479,531,20.76
+3,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7574,757,815,48.07
+3,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.6884,688,744,41.9
+3,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8591,859,937,66.59
+3,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.453,453,481,26.65
+3,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7611,761,833,79.01
+3,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6881,688,732,32.67
+3,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8251,825,891,82.71
+3,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4965,497,530,26.02
+3,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7405,741,804,72.52
+3,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7198,720,775,49.95
+3,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.844,844,897,75.64
+3,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4821,482,531,19.01
+3,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7383,738,811,57.73
+3,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6711,671,718,51.85
+3,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7396,740,818,73.68
+3,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4118,412,445,14.8
+3,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7343,734,808,79.96
+3,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6778,678,721,31.25
+3,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.3887,389,424,19.87
+3,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.7136,714,777,57.68
+4,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.6909,691,761,42.85
+4,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8142,814,871,72.7
+4,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.4802,480,526,27.45
+4,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7374,737,797,70.6
+4,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7195,720,793,57.28
+4,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8287,829,881,67.69
+4,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.4593,459,504,32.02
+4,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7862,786,860,83.31
+4,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.6962,696,739,49.77
+4,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8078,808,892,70.24
+4,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4687,469,504,24.95
+4,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7939,794,855,63.54
+4,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7045,704,758,34.62
+4,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8043,804,887,81.21
+4,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4527,453,487,24.19
+4,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7795,780,828,60.15
+4,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7221,722,773,34.43
+4,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8043,804,872,61.06
+4,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4352,435,472,19.74
+4,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7615,762,837,78.08
+4,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6404,640,686,35.22
+4,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7493,749,805,70.64
+4,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4178,418,450,14.93
+4,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7389,739,792,67.29
+4,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6887,689,731,39.37
+4,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4439,444,474,20.94
+4,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.7009,701,749,42.33
+5,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.6851,685,760,65.04
+5,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8756,876,930,75.52
+5,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.509,509,562,19.88
+5,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7447,745,826,65.82
+5,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7099,710,784,50.93
+5,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8799,880,967,99.29
+5,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.4839,484,521,24.59
+5,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7494,749,812,55.7
+5,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.6878,688,758,46.1
+5,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8504,850,902,64.71
+5,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4767,477,517,21.67
+5,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.8008,801,859,72.43
+5,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6857,686,740,41.6
+5,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8227,823,892,58.82
+5,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4955,496,547,30.7
+5,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7771,777,851,66.98
+5,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7163,716,794,49.13
+5,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8022,802,852,49.55
+5,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4302,430,474,19.61
+5,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7236,724,798,62.87
+5,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6565,657,701,32.57
+5,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7633,763,824,63.97
+5,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4074,407,449,21.88
+5,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.6991,699,752,57.13
+5,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6443,644,683,40.11
+5,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4334,433,464,29.12
+5,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.6967,697,766,59.82
+6,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.7046,705,776,42.52
+6,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8733,873,967,101.63
+6,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.516,516,558,27.98
+6,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7727,773,832,72.69
+6,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7439,744,823,56.2
+6,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8381,838,910,63.82
+6,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.4521,452,500,28.13
+6,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7391,739,803,63.23
+6,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7427,743,807,50.57
+6,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8651,865,950,94.89
+6,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4754,475,514,32.07
+6,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7687,769,824,66.79
+6,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7148,715,789,64.81
+6,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8538,854,943,75.85
+6,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.443,443,490,18.75
+6,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7768,777,861,63.37
+6,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6959,696,745,40.95
+6,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8289,829,913,81.94
+6,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4598,460,489,18.79
+6,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7732,773,852,71.2
+6,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6752,675,722,37.04
+6,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7825,783,856,73.71
+6,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.3848,385,427,24.35
+6,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7043,704,757,59.23
+6,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6664,666,739,44.9
+6,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4499,450,491,21.11
+6,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.7356,736,783,52.51
+7,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.7011,701,770,62.78
+7,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8459,846,921,83.73
+7,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.5075,507,555,27.74
+7,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7342,734,814,78.9
+7,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.6898,690,748,52.86
+7,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8836,884,947,56.08
+7,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.5089,509,546,18.53
+7,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7597,760,828,62.09
+7,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7171,717,777,56.35
+7,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8242,824,886,70.46
+7,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.471,471,519,27.35
+7,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7885,788,850,55.76
+7,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.7006,701,772,64.55
+7,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8566,857,949,101.55
+7,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4544,454,492,27.73
+7,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7477,748,799,48.11
+7,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6719,672,742,47.08
+7,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8491,849,915,73.29
+7,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4454,445,491,26.26
+7,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7598,760,823,62.2
+7,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6124,612,653,34.68
+7,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7631,763,819,74.74
+7,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4469,447,485,27.58
+7,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7379,738,801,59.71
+7,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6963,696,765,42.64
+7,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4324,432,461,27.39
+7,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.6893,689,735,43.46
+8,Monday,Breakfast,7:30–8:50 AM,Poha + Tawa sandwich + Bread + Jam + Fruit + Milk + Tea + Cornflakes,1000,0.7091,709,780,51.73
+8,Monday,Lunch,12:30–1:50 PM,Dal Rajma + Lauki masala + Jeera Rice + Chapati + Salad + Plain Curd + Roti + Papad,1000,0.8563,856,910,74.19
+8,Monday,Snacks,5:00–5:30 PM,Aloo Patties + Masala Tea,1000,0.4892,489,540,28.92
+8,Monday,Dinner,7:30–8:50 PM,Dal Kali Masoor + Palak corn + Aloo Jeera + Rice + Roti + Sponge rasgulla,1000,0.7365,736,794,55.21
+8,Tuesday,Breakfast,7:30–8:50 AM,Aloo paratha + Upma + Chutney + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7,700,766,62.49
+8,Tuesday,Lunch,12:30–1:50 PM,Chole Masala + Kaddu Khata Meetha + Puri + Rice + Boondi Raita + Salad,1000,0.8657,866,932,67.84
+8,Tuesday,Snacks,5:00–5:30 PM,Chilli potato + Tea,1000,0.4748,475,524,30.58
+8,Tuesday,Dinner,7:30–8:50 PM,Chana dry + Mix dal + Aloo Nutri Masala + Rice + Roti + Mohan Kheer,1000,0.7914,791,859,70.37
+8,Wednesday,Breakfast,7:30–8:50 AM,Chole Kulche + Poha + Milk + Tea + Cornflakes + Bread + Jam + Fruit,1000,0.7099,710,783,51.59
+8,Wednesday,Lunch,12:30–1:50 PM,Arhar dal + Aloo Matar ki Subzi + Rice + Roti + Raita + Salad,1000,0.8435,843,905,81.3
+8,Wednesday,Snacks,5:00–5:30 PM,Macroni + Tea,1000,0.4487,449,498,19.97
+8,Wednesday,Dinner,7:30–8:50 PM,Dal Makhani + Shahi Paneer + Roti + Rice + Rasgulla,1000,0.7744,774,852,82.0
+8,Thursday,Breakfast,7:30–8:50 AM,Idli + SAmber + Chutney + Vegetable Daliya + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6651,665,712,49.08
+8,Thursday,Lunch,12:30–1:50 PM,Kadi Pakoda + Allo Bhujiya + Malka Dal + Rice + Roti + Pyaj Laccha,1000,0.8071,807,863,67.26
+8,Thursday,Snacks,5:00–5:30 PM,Baby Pizza + Tea,1000,0.4951,495,538,30.19
+8,Thursday,Dinner,7:30–8:50 PM,Dal Arhar + Veg machurian + Chowmein + Jeera Rice + Roti + Ice cream,1000,0.7213,721,799,59.25
+8,Friday,Breakfast,7:30–8:50 AM,Aloo + Bhaji + Poori + Suji Haluwa + Corn Flakes + Milk + Bread + Jam + Tea + Fruits,1000,0.6976,698,752,38.64
+8,Friday,Lunch,12:30–1:50 PM,Chana Dal + Aloo Shimla + Jeera Rice + Mix raita + Salad + Roti,1000,0.8376,838,911,71.52
+8,Friday,Snacks,5:00–5:30 PM,Bread Pakoda + Tea,1000,0.4252,425,460,28.41
+8,Friday,Dinner,7:30–8:50 PM,Dhaba Dal + Veg Pulav + Soya Chaap + Karela Fry + Roti + Brownie,1000,0.7584,758,839,84.42
+8,Saturday,Breakfast,7:30–8:50 AM,Pav + Bhaji + Veg Vermicilly + Cornflakes + Milk + Tea + Bread + Jam + Fruit,1000,0.6592,659,719,56.97
+8,Saturday,Lunch,12:30–1:50 PM,Dal Tadka + Jeera Rice + MixVeg + Curd + Salad + Roti,1000,0.7804,780,830,69.93
+8,Saturday,Snacks,5:00–5:30 PM,Aloo Ki Sabji Khasta Kachori + Lassi,1000,0.4371,437,472,27.54
+8,Saturday,Dinner,7:30–8:50 PM,Moong Dal + Mushroom Masala + Dry Mutter + Rice + Roti + Chocolate Pastrie,1000,0.7089,709,760,49.91
+8,Sunday,Breakfast,7:30–8:50 AM,Fried Idli + Sambar + Coconut Chutney + Veg Pulav + Chole + Bhature + Boondi Raita + Bread + Jam + Tea + Cutfruit,1000,0.6574,657,708,48.79
+8,Sunday,Snacks,5:00–5:30 PM,Namkeen / Tea,1000,0.4439,444,482,19.7
+8,Sunday,Dinner,7:30–8:50 PM,Black Chana Curry + Chilli Paneer + Aloo Tamater Sabji + Rice + Roti + Milk Cake,1000,0.6993,699,753,57.85
