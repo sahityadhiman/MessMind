@@ -22,6 +22,17 @@ h1, h2 { font-family: Manrope, sans-serif; letter-spacing: -.045em; }
 h1 { font-size: clamp(34px, 7vw, 48px); line-height: 1.13; margin: 0; font-weight: 700; }
 h1 span { color: var(--headline-soft); }
 .intro { color: var(--body-copy); line-height: 1.65; max-width: 440px; margin: 15px 0 0; font-size: 14px; }
+.mode-picker { margin: 0 0 16px; padding: 15px 17px 13px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--paper) 83%, transparent); box-shadow: var(--card-shadow); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
+.mode-picker-heading { display: flex; align-items: center; justify-content: space-between; gap: 14px; }
+.mode-picker .eyebrow { margin: 0 0 3px; font-size: 9px; }
+.mode-picker h2 { font-size: 16px; }
+.mode-options { display: inline-flex; flex: 0 0 auto; padding: 3px; gap: 2px; border: 1px solid var(--line); border-radius: 999px; background: color-mix(in srgb, var(--canvas) 80%, transparent); }
+.mode-option { min-height: 33px; margin: 0; padding: 0 12px; border: 1px solid transparent; border-radius: 999px; background: transparent; color: var(--muted); font-size: 11px; font-weight: 600; white-space: nowrap; }
+.mode-option:hover { color: var(--ink); background: var(--soft-green); transform: none; }
+.mode-option.is-active { color: #fff; background: var(--green-solid); box-shadow: 0 3px 8px #1b5d421f; }
+.mode-option.is-active:hover { color: #fff; background: var(--green-solid); }
+.mode-option:focus-visible { outline: 3px solid color-mix(in srgb, var(--green) 35%, transparent); outline-offset: 2px; }
+.mode-description { color: var(--body-copy); margin: 9px 2px 0; font-size: 11px; line-height: 1.5; }
 .planner, .result { background: var(--paper); border: 1px solid var(--line); border-radius: 16px; padding: 25px; box-shadow: var(--card-shadow); }
 .planner { background: var(--planner-surface); -webkit-backdrop-filter: blur(5px) saturate(1.03); backdrop-filter: blur(5px) saturate(1.03); }
 .planner-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
@@ -76,7 +87,41 @@ footer { color: var(--muted); text-align: center; font-size: 11px; padding-top: 
 .staff-link:hover { color: var(--green); text-decoration: underline; }
 .admin-note { color: #74847d; font-size: 12px; line-height: 1.6; margin: -8px 0 18px; }
 .admin-record-table { margin-top: 14px; }
+.readiness-card { margin: 0 0 18px; padding: 13px 14px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--soft-green) 72%, transparent); }
+.readiness-card strong { color: var(--ink); font-size: 12px; }
+.readiness-card p { color: var(--body-copy); font-size: 11px; line-height: 1.55; margin: 5px 0 10px; }
+.readiness-track { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.readiness-track > div { display: grid; gap: 5px; }
+.readiness-track small { color: var(--muted); font-size: 9px; }
+.readiness-track span { position: relative; height: 6px; overflow: hidden; border-radius: 99px; background: var(--line); }
+.readiness-track span::after { position: absolute; inset: 0 auto 0 0; width: var(--progress, 0%); border-radius: inherit; background: var(--green); content: ""; transition: width .2s ease; }
+.optional-label { color: var(--muted); font-size: 10px; font-weight: 400; }
+.records-tools { display: flex; align-items: center; gap: 10px; }
+.download-button { display: inline-flex; align-items: center; justify-content: center; text-decoration: none; }
+.demo-planner { margin-top: 16px; }
+.simulation-pill { color: #7a5b1d; background: #f8f0d9; border: 1px solid #eddfb9; border-radius: 999px; padding: 7px 9px; font-size: 9px; font-weight: 800; letter-spacing: .08em; white-space: nowrap; }
+.demo-menu-box { border: 1px solid var(--input-border); border-radius: 9px; padding: 11px 12px; background: color-mix(in srgb, var(--input-bg) 84%, transparent); }
+.demo-menu-box > span { display: block; color: var(--muted); font-size: 10px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; }
+.demo-menu-box p { color: var(--ink); font-size: 12px; line-height: 1.55; margin: 5px 0 0; }
+.demo-assumptions { margin-top: 17px; padding: 13px 14px; border-radius: 10px; background: color-mix(in srgb, var(--soft-green) 78%, transparent); color: var(--body-copy); font-size: 11px; line-height: 1.55; }
+.demo-assumptions strong { color: var(--ink); font-size: 11px; }
+.demo-assumptions p { margin: 5px 0 0; }
+.demo-error { margin-top: 3px; }
+.report-button { justify-self: stretch; }
+.demo-result { margin-top: 12px; }
+.weekly-report { margin-top: 12px; }
+.weekly-report h2 { font-size: 21px; }
+.report-table { margin-top: 5px; }
+.report-table td { color: var(--body-copy); border-bottom-color: var(--line); }
+.demo-range { color: var(--muted); font-size: 12px; margin: 5px 0 15px; }
+.demo-metrics { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin: 15px 0; }
+.demo-metrics > div { display: grid; gap: 5px; padding: 12px; border: 1px solid var(--result-border); border-radius: 10px; background: color-mix(in srgb, var(--paper) 60%, transparent); }
+.demo-metrics > div > span { color: var(--muted); font-size: 10px; }
+.demo-metrics strong { color: var(--green); font: 700 19px Manrope, sans-serif; }
+.synthetic-evaluation { border-top: 1px solid var(--result-border); padding-top: 12px; font-size: 11px !important; line-height: 1.6; }
+:root[data-theme="dark"] .simulation-pill { color: #ecd7a1; background: #3a3220; border-color: #66552f; }
 @media (max-width: 520px) { .app-shell { width: min(100% - 28px, 680px); padding-top: 18px; } .welcome { padding-top: 43px; } .planner, .result { padding: 20px; } .today { font-size: 11px; } }
+@media (max-width: 520px) { .mode-picker { padding: 14px; } .mode-picker-heading { align-items: flex-start; flex-direction: column; gap: 10px; } .mode-options { width: 100%; } .mode-option { flex: 1; padding: 0 8px; } }
 
 .theme-toggle {
   display: inline-flex;
@@ -217,4 +262,6 @@ footer { color: var(--muted); text-align: center; font-size: 11px; padding-top: 
   .estimate-button,
   .estimate-button::before,
   .estimate-button span { transition: none; }
+  .readiness-track span::after { transition: none; }
+  .mode-option { transition: none; }
 }

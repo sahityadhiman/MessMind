@@ -54,15 +54,28 @@
         <p class="intro">Estimate how many students will eat, then plan the right amount of food.</p>
       </section>
 
-      <section class="planner" aria-labelledby="planner-title">
+      <section class="mode-picker" aria-labelledby="mode-picker-title">
+        <div class="mode-picker-heading">
+          <div><p class="eyebrow">PREDICTION MODE</p><h2 id="mode-picker-title">Choose how to explore</h2></div>
+          <div class="mode-options" role="group" aria-label="Choose prediction mode">
+            <button class="mode-option is-active" id="real-mode-button" type="button" aria-pressed="true">Real estimate</button>
+            <button class="mode-option" id="demo-mode-button" type="button" aria-pressed="false">Demo simulation</button>
+          </div>
+        </div>
+        <p class="mode-description" id="mode-description">Uses staff-entered records only. If there isn’t enough history yet, MessMind will say so instead of inventing a real-data estimate.</p>
+      </section>
+
+      <section class="planner" aria-labelledby="planner-title" data-mode-panel="real">
         <div class="planner-heading">
           <div><p class="eyebrow">QUICK ESTIMATE</p><h2 id="planner-title">Meal details</h2></div>
           <span class="step-badge">01 <span>/ 02</span></span>
         </div>
         <form id="meal-form">
+          <label for="forecast-date">Meal date</label>
+          <input id="forecast-date" name="meal_date" type="date" required />
           <label for="meal">Meal</label>
           <select id="meal" name="meal">
-            <option>Lunch</option><option>Dinner</option><option>Breakfast</option>
+            <option>Lunch</option><option>Dinner</option><option>Breakfast</option><option>Snacks</option>
           </select>
           <label for="menu">Today’s menu</label>
           <input id="menu" name="menu" placeholder="e.g. Rice, dal and paneer" required />
@@ -70,18 +83,73 @@
           <div class="input-suffix"><input id="students" name="students" type="number" min="1" value="800" required /><span>students</span></div>
           <button class="estimate-button" type="submit">Estimate attendance <span aria-hidden="true">→</span></button>
         </form>
-        <p class="note"><span aria-hidden="true">✦</span> Uses approved real records for the same meal. Menu and weekday are not part of the estimate yet; demo records are ignored.</p>
+        <p class="note"><span aria-hidden="true">✦</span> Uses non-demo staff records only. The app starts with a same-meal average, then uses the menu and weekday only if a real-data model beats that average on a time-ordered check.</p>
       </section>
 
-      <section class="result" id="result" aria-live="polite" hidden>
+      <section class="result" id="result" aria-live="polite" data-mode-panel="real" hidden>
         <p class="eyebrow" id="result-label">HISTORICAL ESTIMATE</p>
         <h2><span id="estimate">—</span> <small id="estimate-unit">students expected</small></h2>
         <p id="result-detail"></p>
+        <p class="historical-waste" id="historical-waste"></p>
+      </section>
+
+      <section class="planner demo-planner" aria-labelledby="demo-title" data-mode-panel="demo" hidden>
+        <div class="planner-heading">
+          <div><p class="eyebrow">HACKATHON DEMO</p><h2 id="demo-title">Try a meal simulation</h2></div>
+          <span class="simulation-pill">SIMULATED</span>
+        </div>
+        <p class="section-intro">Explore how MessMind could estimate meal attendance and food waste from a menu. Every training value and result here is generated for demonstration.</p>
+        <form id="demo-form">
+          <div class="field-grid">
+            <div><label for="demo-day">Weekday</label><select id="demo-day" name="day"></select></div>
+            <div><label for="demo-meal">Meal</label><select id="demo-meal" name="meal"></select></div>
+          </div>
+          <label for="demo-students">Students eligible in this simulation</label>
+          <div class="input-suffix"><input id="demo-students" name="students" type="number" min="1" max="10000" value="1000" required /><span>students</span></div>
+          <div class="demo-menu-box"><span>Menu from the provided plan · <b id="demo-time"></b></span><p id="demo-menu">Loading menu…</p></div>
+          <button class="estimate-button" id="demo-submit" type="submit">Run simulated prediction <span aria-hidden="true">→</span></button>
+          <button class="secondary-button report-button" id="weekly-report-button" type="button">View 7-day demo report</button>
+          <p class="form-message demo-error" id="demo-message" aria-live="polite"></p>
+        </form>
+        <div class="demo-assumptions">
+          <strong>What is simulated?</strong>
+          <p>The weekday menu is repeated across eight generated weeks, starting with 1,000 eligible students. Suggested servings add an 8% reserve. Simulated waste assumes cooked servings of 0.38 kg for breakfast, 0.60 kg for lunch, 0.18 kg for snacks, and 0.55 kg for dinner, plus a generated 6%–11% preparation reserve and 20–55 g of plate leftovers. None are measured mess data. Sunday lunch is blank in the supplied plan.</p>
+        </div>
+      </section>
+
+      <section class="result demo-result" id="demo-result" aria-live="polite" data-mode-panel="demo" hidden>
+        <p class="eyebrow">SIMULATED PREDICTION</p>
+        <h2><span id="demo-expected">—</span> <small>students expected</small></h2>
+        <p class="demo-range" id="demo-range"></p>
+        <div class="demo-metrics">
+          <div><span>Suggested portions</span><strong id="demo-portions">—</strong></div>
+          <div><span>Estimated food waste</span><strong><span id="demo-waste">—</span> kg</strong></div>
+        </div>
+        <p id="demo-result-detail"></p>
+        <p class="synthetic-evaluation" id="synthetic-evaluation"></p>
+      </section>
+
+      <section class="result weekly-report" id="weekly-report" aria-labelledby="weekly-report-title" data-mode-panel="demo" hidden>
+        <p class="eyebrow">SIMULATED REPORT</p>
+        <h2 id="weekly-report-title">Seven-day menu outlook</h2>
+        <div class="demo-metrics">
+          <div><span>Estimated meal servings</span><strong id="weekly-servings">—</strong></div>
+          <div><span>Estimated food waste</span><strong><span id="weekly-waste">—</span> kg</strong></div>
+        </div>
+        <p id="weekly-highest" class="demo-range"></p>
+        <div class="table-wrap">
+          <table class="report-table">
+            <thead><tr><th>Day</th><th>Meal servings*</th><th>Estimated waste</th></tr></thead>
+            <tbody id="weekly-days"></tbody>
+          </table>
+        </div>
+        <p class="synthetic-evaluation" id="weekly-note"></p>
       </section>
 
       <footer>Made for smarter, less wasteful meals. <a class="staff-link" href="/admin">Mess staff</a></footer>
     </main>
     <script src="app.js"></script>
+    <script src="demo.js"></script>
     <script type="module" src="effects/sketchbook/mount.js"></script>
   </body>
 </html>
