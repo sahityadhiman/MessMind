@@ -16,7 +16,7 @@
       <section class="welcome">
         <p class="eyebrow">AUTHORIZED MESS STAFF</p>
         <h1>Record meals.<br /><span>Improve estimates.</span></h1>
-        <p class="intro">Add the approved total for each meal. Enter aggregate counts only—never student names, IDs, or room numbers.</p>
+        <p class="intro">Add approved aggregate totals only—never student names, IDs, or room numbers. Leave unmeasured fields blank; a blank is not zero.</p>
       </section>
 
       <section class="planner" aria-labelledby="records-title">
@@ -24,7 +24,15 @@
           <div><p class="eyebrow">MEAL HISTORY</p><h2 id="records-title">Add a meal record</h2></div>
           <button class="secondary-button" id="fill-example" type="button">Fill demo example</button>
         </div>
-        <p class="admin-note">Real records affect estimates. Use only approved totals. Demo records never affect estimates.</p>
+        <p class="admin-note">Only approved, non-demo totals affect real estimates. For food waste, use the same weighing method each time and enter the total discarded food in kg. Leave it blank if it was not measured.</p>
+        <div class="readiness-card" aria-live="polite">
+          <strong>Learning readiness</strong>
+          <p id="readiness-message">Checking approved records…</p>
+          <div class="readiness-track">
+            <div><small>Attendance model</small><span id="attendance-progress" role="progressbar" aria-label="Attendance model training progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span></div>
+            <div><small>Waste model</small><span id="waste-progress" role="progressbar" aria-label="Measured waste model training progress" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"></span></div>
+          </div>
+        </div>
         <form id="record-form">
           <label for="record-date">Date</label>
           <input id="record-date" name="meal_date" type="date" required />
@@ -36,15 +44,19 @@
             <div><label for="record-students">Students eligible</label><input id="record-students" name="students" type="number" min="1" required /></div>
             <div><label for="record-served">Meals served</label><input id="record-served" name="meals_served" type="number" min="0" required /></div>
           </div>
+          <div class="field-grid">
+            <div><label for="record-prepared">Portions prepared <span class="optional-label">optional</span></label><input id="record-prepared" name="prepared_portions" type="number" min="0" placeholder="Only if counted" /></div>
+            <div><label for="record-waste">Total food waste (kg) <span class="optional-label">optional</span></label><input id="record-waste" name="food_waste_kg" type="number" min="0" max="100000" step="0.1" placeholder="Only if weighed" /></div>
+          </div>
           <label class="demo-toggle" for="record-demo"><input id="record-demo" name="is_demo" type="checkbox" /><span id="record-demo-label">Mark this as demo data</span></label>
           <button class="secondary-button" id="cancel-edit" type="button" hidden>Cancel editing</button>
           <button id="record-submit" type="submit">Save meal record <span aria-hidden="true">→</span></button>
           <p class="form-message" id="record-message" aria-live="polite"></p>
         </form>
-        <div class="records-heading"><h3>Saved records</h3><span id="record-count">0 records</span></div>
+        <div class="records-heading"><h3>Saved records</h3><div class="records-tools"><span id="record-count">0 records</span><a class="secondary-button download-button" href="/records/export.csv">Download real CSV</a></div></div>
         <div class="table-wrap">
           <table class="admin-record-table">
-            <thead><tr><th>Date</th><th>Meal and menu</th><th>Served / eligible</th><th>Type</th><th>Actions</th></tr></thead>
+            <thead><tr><th>Date</th><th>Meal and menu</th><th>Served / eligible</th><th>Prepared</th><th>Waste kg</th><th>Type</th><th>Actions</th></tr></thead>
             <tbody id="records-list"></tbody>
           </table>
           <p class="empty-records" id="records-empty">No meal records saved yet.</p>

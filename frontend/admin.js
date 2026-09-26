@@ -36,6 +36,16 @@ function renderRecords(records) {
     const totalsCell = document.createElement('td');
     totalsCell.textContent = `${record.meals_served.toLocaleString()} / ${record.students.toLocaleString()}`;
 
+    const preparedCell = document.createElement('td');
+    preparedCell.textContent = record.prepared_portions == null
+      ? '—'
+      : record.prepared_portions.toLocaleString();
+
+    const wasteCell = document.createElement('td');
+    wasteCell.textContent = record.food_waste_kg == null
+      ? '—'
+      : Number(record.food_waste_kg).toLocaleString(undefined, { maximumFractionDigits: 1 });
+
     const typeCell = document.createElement('td');
     const badge = document.createElement('span');
     badge.className = record.is_demo ? 'record-type' : 'record-type real';
@@ -59,7 +69,7 @@ function renderRecords(records) {
       actionCell.append(removeButton);
     }
 
-    row.append(dateCell, mealCell, totalsCell, typeCell, actionCell);
+    row.append(dateCell, mealCell, totalsCell, preparedCell, wasteCell, typeCell, actionCell);
     tableBody.append(row);
   }
 
@@ -73,6 +83,26 @@ async function loadRecords() {
   if (!response.ok) throw new Error('Could not load meal records. Check staff sign-in.');
   savedRecords = await response.json();
   renderRecords(savedRecords);
+}
+
+async function loadReadiness() {
+  const response = await fetch('/model/readiness');
+  if (!response.ok) throw new Error('Could not load model readiness. Check staff sign-in.');
+  const readiness = await response.json();
+  const modelTarget = readiness.minimum_records_for_validated_model;
+  const attendancePercent = Math.min(100, readiness.real_attendance_records / modelTarget * 100);
+  const wastePercent = Math.min(100, readiness.measured_waste_records / modelTarget * 100);
+  const attendanceBar = document.querySelector('#attendance-progress');
+  const wasteBar = document.querySelector('#waste-progress');
+  attendanceBar.style.setProperty('--progress', `${attendancePercent}%`);
+  wasteBar.style.setProperty('--progress', `${wastePercent}%`);
+  attendanceBar.setAttribute('aria-valuenow', String(Math.round(attendancePercent)));
+  wasteBar.setAttribute('aria-valuenow', String(Math.round(wastePercent)));
+  document.querySelector('#readiness-message').textContent =
+    `Attendance: ${readiness.real_attendance_records}/${modelTarget} non-demo records. ` +
+    `Measured waste: ${readiness.measured_waste_records}/${modelTarget}. ` +
+    `A same-meal average starts after ${readiness.minimum_meal_history_for_average} matching records. ` +
+    `The model checks up to the latest ${readiness.model_history_limit} records; demo rows never count.`;
 }
 
 function resetRecordForm() {
@@ -94,6 +124,8 @@ function startEditing(record) {
   document.querySelector('#record-menu').value = record.menu;
   document.querySelector('#record-students').value = record.students;
   document.querySelector('#record-served').value = record.meals_served;
+  document.querySelector('#record-prepared').value = record.prepared_portions ?? '';
+  document.querySelector('#record-waste').value = record.food_waste_kg ?? '';
   demoCheckbox.checked = record.is_demo;
   demoCheckbox.disabled = true;
   demoLabel.textContent = record.is_demo
@@ -116,8 +148,10 @@ exampleButton.addEventListener('click', () => {
   document.querySelector('#record-menu').value = 'DEMO: dal, rice, chapati';
   document.querySelector('#record-students').value = 800;
   document.querySelector('#record-served').value = 640;
+  document.querySelector('#record-prepared').value = 690;
+  document.querySelector('#record-waste').value = 42.5;
   demoCheckbox.checked = true;
-  message.textContent = 'Example filled in. These numbers are fake demo data.';
+  message.textContent = 'Example filled in. Every value here is fake demo data.';
   message.style.color = '';
 });
 
@@ -129,7 +163,13 @@ recordForm.addEventListener('submit', async (event) => {
     meal: document.querySelector('#record-meal').value,
     menu: document.querySelector('#record-menu').value.trim(),
     students: Number(document.querySelector('#record-students').value),
-    meals_served: Number(document.querySelector('#record-served').value)
+    meals_served: Number(document.querySelector('#record-served').value),
+    prepared_portions: document.querySelector('#record-prepared').value === ''
+      ? null
+      : Number(document.querySelector('#record-prepared').value),
+    food_waste_kg: document.querySelector('#record-waste').value === ''
+      ? null
+      : Number(document.querySelector('#record-waste').value)
   };
   if (!editing) record.is_demo = demoCheckbox.checked;
 
@@ -158,6 +198,7 @@ recordForm.addEventListener('submit', async (event) => {
         ? 'Demo record saved. It will not affect estimates.'
         : 'Verified meal record saved. It can affect future estimates.';
     await loadRecords();
+    await loadReadiness();
     resetRecordForm();
   } catch (error) {
     message.textContent = error.message;
@@ -206,4 +247,7 @@ setToday();
 loadRecords().catch((error) => {
   message.textContent = error.message;
   message.style.color = '#a34a3a';
+});
+loadReadiness().catch((error) => {
+  document.querySelector('#readiness-message').textContent = error.message;
 });

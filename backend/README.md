@@ -1,6 +1,6 @@
 # MessMind backend
 
-This API estimates attendance from the recent average of approved real records for the same meal and saves aggregate meal records in a local SQLite database. It ignores demo records and reports when no real history is available. The baseline does not use menu or weekday yet, and it is not a trained ML model.
+The API keeps a separate simulation path and staff-entered record path. Real-history estimates exclude DEMO rows. After three non-demo records for the selected meal, the app can show a weighted same-meal average. With at least 35 non-demo rows, it evaluates ridge regression on an older/newer chronological split and uses the model only if it beats the simple average. Measured-waste predictions follow the same process using rows that actually contain a waste measurement. These checks help avoid using a more complex model when it performs worse; they do not prove accuracy for real kitchen decisions.
 
 ## Start it on Windows
 
@@ -15,22 +15,29 @@ py -m pip install -r requirements.txt
 py -m uvicorn main:app --reload
 ```
 
-In the `.env` file, set a private staff password after `MESSMIND_ADMIN_PASSWORD=` and save it. Keep this password private; `.env` is excluded from Git. Use `mess-manager` as the username unless you change it in that file. The browser will ask for these credentials when you open the staff page.
+In `.env`, set a private value for `MESSMIND_ADMIN_PASSWORD`. Keep this password private; `.env` is excluded from Git. The default username is `mess-manager`. The browser asks for these credentials when you open the staff page.
 
-When it starts, open `http://127.0.0.1:8000/` for the student estimate page, `http://127.0.0.1:8000/admin` for staff records, or `http://127.0.0.1:8000/docs` to see the API.
+Open `http://127.0.0.1:8000/` for the student page, `/admin` for staff records, and `/docs` for API documentation. The local app uses `backend/messmind.db`.
 
-- `POST /predict` accepts `meal`, `menu`, and `students`, and uses up to the 30 latest real records for the same meal. It returns a message instead of a number when no real records are available.
-- `POST /records` saves one aggregate meal record: `meal_date`, `meal`, `menu`, `students`, and `meals_served`.
-- `PUT /records/{id}` lets authorized staff correct a saved record while keeping its DEMO or REAL type unchanged.
-- `GET /records` returns saved meal records.
-- `DELETE /records/{id}` removes a demo record only; real records are protected.
+## Main routes
 
-The local database is `messmind.db`. It is ignored by Git so meal data is not uploaded to GitHub. Only enter real records if the mess or college has approved their use; do not add student names, IDs, or room numbers.
+- `POST /predict` accepts `meal`, `menu`, `students`, and optional `meal_date` (`YYYY-MM-DD`). It estimates attendance from non-demo rows and may return a measured-waste estimate.
+- `GET /model/readiness` requires staff login and returns aggregate attendance/waste counts and model thresholds. It does not reveal records.
+- `GET /demo/menu-plan` returns the supplied weekday menu, assumptions, and synthetic-only validation information.
+- `POST /demo/predict` accepts `day`, `meal`, and `students`, then returns simulated attendance, suggested portions, and simulated waste. The blank Sunday lunch is unavailable.
+- `POST /demo/weekly-report` summarizes a simulated menu week and does not save the report as real data.
+- `POST /records` saves a staff-entered aggregate meal record: `meal_date`, `meal`, `menu`, `students`, and `meals_served`, plus optional `prepared_portions` and `food_waste_kg`.
+- `PUT /records/{id}` edits a saved record but keeps its DEMO or non-demo type unchanged. Blank measurements stay blank; they are never treated as zero.
+- `GET /records` returns saved records to authenticated staff.
+- `GET /records/export.csv` downloads non-demo aggregate rows only; no identity fields are stored or exported.
+- `DELETE /records/{id}` deletes DEMO records only. Non-demo records are protected from this route.
 
-The student-facing page does not expose record entry. The staff page and record APIs require the configured staff login. This setup is for local development; do not deploy it over plain HTTP. HTTP Basic credentials require HTTPS when used over a network.
+## Data and model notes
 
-On Vercel, the demo database is placed in `/tmp`, which is temporary storage. The deployed app blocks adding or editing REAL records until a permanent database is connected and `MESSMIND_ENABLE_REAL_RECORDS=true` is explicitly set. Keep real data collection disabled until the mess or college approves it.
+Only enter real records if the mess or college has approved their use. Never enter student names, IDs, or room numbers. Use the same method each time you weigh food waste and enter the total in kg. If it was not measured, leave the field blank. The real-data model uses up to the latest 500 non-demo rows.
 
-## Before hosting online
+The demo model and `ml/data/demo_training_data.csv` use generated values, not college measurements. To recreate that CSV from the repository root, run `py -m ml.generate_demo_data`. Synthetic rows are not used by the real-history prediction path and are not valid for actual food-preparation decisions. No external AI API key is needed.
 
-The app can use `MESSMIND_DATABASE_PATH` to place its SQLite file in a persistent storage folder. Hosting storage must persist across restarts and redeploys before you enter real meal records online. Some free hosts erase local database files when they restart or go idle. Set `MESSMIND_ADMIN_USERNAME` and `MESSMIND_ADMIN_PASSWORD` as private host environment variables, and use HTTPS. Keep real records local until persistent storage and the college or mess approval are ready.
+The staff page and record APIs require the configured login. Use HTTPS when the app is reachable over a network because HTTP Basic credentials are not encrypted over plain HTTP.
+
+On Vercel, SQLite storage under `/tmp` is temporary. The app blocks adding or editing non-demo records until persistent storage is connected and `MESSMIND_ENABLE_REAL_RECORDS=true` is explicitly set. Keep real-data collection disabled until the college approves it and storage persistence is confirmed. Connect Neon Postgres using the private `DATABASE_URL` environment variable. Set `MESSMIND_ADMIN_USERNAME` and `MESSMIND_ADMIN_PASSWORD` as private host environment variables.

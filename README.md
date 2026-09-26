@@ -29,38 +29,40 @@ This leads to inconsistent portioning, avoidable food waste, and guesswork in da
 
 ## 🎯 Solution
 
-MessMind gives mess staff two ways to plan:
+MessMind gives mess staff two clearly separated ways to plan:
 
-* **Historical estimates** — grounded in real, recorded attendance for that meal
-* **Simulated planning** — a demo mode to explore portions and waste for a given day, meal, and student count
+* **Real estimate** — grounded only in saved, non-demo attendance records
+* **Demo simulation** — generated examples to explore attendance, portions, and waste for a selected meal
 
-Staff can record real meal data over time, and the app uses that history to produce more informed estimates — while keeping demo/simulated data clearly separate from real records.
+Staff can record aggregate meal data over time. The app keeps demo results separate so generated numbers are never presented as measured college data.
 
 ---
 
 ## ⚙️ How It Works
 
-1. Mess staff sign in and enter an aggregate record: date, meal, menu, eligible students, and meals served.
-2. For a historical estimate, the student-facing page sends the selected meal and student count to the API.
-3. The API uses up to 30 recent real records for that meal to calculate an attendance rate and estimate attendance. Demo records are ignored; if no real records exist, the app reports that a historical estimate isn't available.
-4. For a simulation, the user picks a day and meal from the supplied menu plan. The model returns simulated attendance, suggested portions, and estimated food waste.
-5. A seven-day demo report runs that simulation across the whole menu plan. Simulation results are never saved as real meal records.
+1. Mess staff sign in and enter an aggregate record: date, meal, menu, eligible students, meals served, and optional measured portions and food waste.
+2. In **Real estimate** mode, the page sends the meal, menu, date, and eligible student count to the API.
+3. The API ignores demo records. With at least three real records for that meal, it can use a weighted historical average. With 35 or more real records, it checks a ridge-regression model against a time-ordered holdout and uses it only if it beats that average. Otherwise, it keeps the simpler estimate or says there is not enough history.
+4. A measured-waste estimate uses only records where waste was actually weighed. Blank waste entries are not treated as zero.
+5. In **Demo simulation** mode, the model returns generated attendance, suggested portions, and estimated waste. The seven-day demo report summarizes the supplied menu plan. Simulation results are never saved as real meal records.
 
 ---
 
 ## ✨ Features
 
-* 📈 **Historical attendance estimate** — estimates attendance for a meal from up to 30 recent real records for that same meal
-* 🧪 **Menu simulation** — choose a day, meal, and student count to see a simulated attendance estimate, suggested portions, and estimated waste
+* 🔀 **Prediction mode switch** — choose between a real-history estimate and a clearly labeled demo simulation
+* 📈 **Real-history attendance estimate** — starts with a same-meal average; a model is used only after a chronological check shows it performs better
+* ⚖️ **Measured-waste estimate** — uses staff-entered waste measurements and keeps missing measurements blank
+* 🧪 **Menu simulation** — choose a day, meal, and student count to see simulated attendance, suggested portions, and estimated waste
 * 📊 **Seven-day demo report** — summarizes simulated servings and waste across the menu plan
-* 🔐 **Staff record page** — password-protected page for adding and correcting aggregate meal records; demo records are kept separate from real records
+* 🔐 **Staff record page** — password-protected page for adding and correcting aggregate records, checking model data readiness, and exporting real records as CSV
 * 🎨 **Interface options** — responsive layout with light/dark theme
 
 ---
 
 ## ⚠️ A Note on the Simulation Model
 
-The simulation model uses generated examples, not measured mess data. Its attendance and waste estimates are **demonstrations, not validated kitchen recommendations**. The historical estimator uses real records when available, but currently considers the meal only — not the menu or weekday.
+The demo model uses generated examples based on the supplied menu plan, not measured mess data. Its estimates are **demonstrations, not validated kitchen recommendations**. The generated-data holdout check only shows how well the model fits its own simulation assumptions. Real-world accuracy still needs to be checked with college-approved meal records and consistently measured waste. The real-history model uses menu and weekday only when it outperforms the same-meal average on a chronological holdout.
 
 ---
 
@@ -81,7 +83,7 @@ The simulation model uses generated examples, not measured mess data. Its attend
 ### Database
 
 * SQLite (local)
-* PostgreSQL supported via `DATABASE_URL`
+* PostgreSQL via `DATABASE_URL` (Neon is configured for the hosted deployment)
 
 ### Prediction Model
 
@@ -94,7 +96,7 @@ The simulation model uses generated examples, not measured mess data. Its attend
 ### Deployment
 
 * Prepared for Vercel
-* Neon PostgreSQL as an option for persistent hosted storage
+* Neon PostgreSQL for persistent hosted storage
 
 ---
 
@@ -152,10 +154,9 @@ MessMind/
 
 ## 🎯 Future Improvements
 
-* Train and validate predictions on approved real attendance data
-* Factor menu and weekday into historical estimates, not just the meal
-* Measure actual leftovers and waste to compare against estimates
-* Connect persistent hosted storage (e.g. Neon PostgreSQL) before using a hosted version for real records
+* Validate estimates with college-approved meal attendance records
+* Add consistently measured leftovers and kitchen waste data to validate waste estimates
+* Compare predictions with actual kitchen outcomes and adjust assumptions as needed
 
 ---
 
