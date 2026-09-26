@@ -216,3 +216,8 @@ MessMind/
 ## Author
 
 Built by [@sahityadhiman](https://github.com/sahityadhiman).
+
+
+## Admin page
+
+[Open the live staff admin page](https://messmind-delta.vercel.app/admin) (staff login required).
