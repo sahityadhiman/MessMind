@@ -264,4 +264,60 @@ footer { color: var(--muted); text-align: center; font-size: 11px; padding-top: 
   .estimate-button span { transition: none; }
   .readiness-track span::after { transition: none; }
   .mode-option { transition: none; }
+  .portal-card { transition: none; }
+}
+
+[hidden] { display: none !important; }
+.portal-chooser { padding: 67px 0 25px; }
+.portal-chooser h1 { margin: 0; }
+.portal-options { display: grid; gap: 12px; margin-top: 24px; }
+.portal-card { display: grid; grid-template-columns: 48px 1fr 28px; align-items: center; gap: 14px; width: 100%; min-height: 88px; margin: 0; padding: 15px 18px; border: 1px solid var(--line); border-radius: 14px; background: color-mix(in srgb, var(--paper) 88%, transparent); color: var(--ink); text-align: left; text-decoration: none; box-shadow: var(--card-shadow); -webkit-backdrop-filter: blur(5px); backdrop-filter: blur(5px); }
+.portal-card:hover { background: var(--paper); color: var(--ink); border-color: color-mix(in srgb, var(--green) 35%, var(--line)); transform: translateY(-2px); }
+.portal-card:focus-visible, .portal-back:focus-visible { outline: 3px solid color-mix(in srgb, var(--green) 35%, transparent); outline-offset: 3px; }
+.portal-card-icon { display: grid; width: 44px; height: 44px; margin: 0; place-items: center; border-radius: 13px; background: var(--soft-green); color: var(--green); font-size: 11px; font-weight: 800; letter-spacing: .06em; }
+.portal-card-copy { display: grid; gap: 4px; margin: 0; font-size: inherit; }
+.portal-card-copy strong { font: 700 15px Manrope, sans-serif; }
+.portal-card-copy small { color: var(--body-copy); font-size: 11px; line-height: 1.45; }
+.portal-card-arrow { margin: 0; color: var(--green); text-align: right; font-size: 21px; }
+.portal-privacy-note { margin: 15px 3px 0; color: var(--note-copy); font-size: 10px; line-height: 1.55; }
+.portal-back { min-height: 30px; margin: 8px 0 0; padding: 0 9px; font-size: 10px; line-height: 1.2; }
+.portal-welcome { padding-top: 38px; }
+.student-login-card h2 { font-size: 20px; }
+.student-login-card .section-intro { margin: 10px 0 13px; max-width: none; }
+.student-login-card .form-message { margin-top: 9px; }
+.student-auth-switch { display: grid; grid-template-columns: 1fr 1fr; gap: 4px; margin: 17px 0 15px; padding: 4px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 70%, transparent); }
+.student-auth-tab { min-height: 38px; padding: 8px 12px; border: 0; border-radius: 7px; background: transparent; color: var(--body-copy); font: 700 12px Manrope, sans-serif; cursor: pointer; }
+.student-auth-tab.is-active { background: var(--paper); color: var(--green); box-shadow: 0 2px 8px #17231b12; }
+.student-auth-tab:focus-visible, #student-logout:focus-visible { outline: 3px solid color-mix(in srgb, var(--green) 35%, transparent); outline-offset: 2px; }
+.student-login-card form { display: grid; gap: 9px; }
+.student-login-card form label { margin-top: 3px; }
+.student-login-card .estimate-button { margin-top: 7px; }
+.student-auth-disclosure { margin: 14px 0 0; color: var(--note-copy); font-size: 10px; line-height: 1.6; }
+.student-account-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 10px 0 14px; padding: 9px 12px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 75%, transparent); color: var(--body-copy); font-size: 11px; }
+.student-account-bar strong { color: var(--ink); font-weight: 700; overflow-wrap: anywhere; }
+.student-account-bar .secondary-button { min-height: 30px; margin: 0; padding: 0 10px; white-space: nowrap; }
+.student-planner { margin-top: 0; }
+.student-planner form { gap: 10px; }
+.meal-choice-group { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; min-width: 0; margin: 5px 0 0; padding: 11px; border: 1px solid var(--line); border-radius: 10px; background: color-mix(in srgb, var(--paper) 76%, transparent); }
+.meal-choice-group legend { padding: 0 5px; color: var(--ink); font: 700 13px Manrope, sans-serif; }
+.meal-choice-group label { display: flex; align-items: center; gap: 7px; min-height: 40px; margin: 0; padding: 7px 9px; border: 1px solid var(--input-border); border-radius: 8px; background: var(--input-bg); color: var(--body-copy); font-size: 11px; font-weight: 500; cursor: pointer; }
+.meal-choice-group input[type="radio"] { width: 16px; min-width: 16px; min-height: 16px; margin: 0; padding: 0; accent-color: var(--green); }
+.meal-choice-group label:has(input:checked) { border-color: color-mix(in srgb, var(--green) 50%, var(--line)); background: var(--soft-green); color: var(--ink); }
+.student-plan-summary { margin-top: 14px; }
+.student-plan-summary ul { display: grid; gap: 7px; margin: 12px 0 0; padding-left: 18px; color: var(--body-copy); font-size: 12px; }
+.student-plan-share-note { color: var(--body-copy); font-size: 11px; line-height: 1.55; }
+.student-plan-summary #student-open-demo { margin-top: 8px; }
+.field-help { display: block; margin-top: 5px; color: var(--muted); font-size: 10px; }
+.student-signal-note { margin: 11px 0; padding: 10px 12px; border: 1px solid color-mix(in srgb, var(--green) 18%, var(--line)); border-left: 3px solid var(--green); border-radius: 8px; background: color-mix(in srgb, var(--soft-green) 70%, transparent); color: var(--body-copy); font-size: 11px; line-height: 1.55; }
+.demo-plan-hint { margin-top: 12px; }
+.demo-planner .estimate-button:disabled { background: color-mix(in srgb, var(--green-solid) 44%, var(--muted)); box-shadow: none; cursor: not-allowed; opacity: .72; }
+.demo-planner .estimate-button:disabled:hover { transform: none; }
+@media (max-width: 520px) {
+  .portal-chooser { padding-top: 48px; }
+  .portal-card { grid-template-columns: 42px 1fr 20px; gap: 10px; padding: 13px; }
+  .portal-card-icon { width: 40px; height: 40px; }
+  .portal-welcome { padding-top: 34px; }
+  .student-account-bar { align-items: flex-start; font-size: 10px; }
+  .meal-choice-group { padding: 9px; gap: 7px; }
+  .meal-choice-group label { padding: 6px; font-size: 10px; }
 }
