@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MessMind — Meal planner</title>
-    <link rel="stylesheet" href="styles.css" />
+    <link rel="stylesheet" href="styles.css?v=student-auth-20260927-1" />
     <link rel="stylesheet" href="effects/sketchbook/threeui.css" />
     <link rel="stylesheet" href="effects/sketchbook/host.css" />
     <script>
@@ -21,7 +21,7 @@
     <div class="sketchbook-background" data-sketchbook-mount></div>
     <main class="app-shell">
       <header class="topbar">
-        <a class="brand" href="#" aria-label="MessMind home">
+        <a class="brand" id="home-link" href="#portal-chooser" aria-label="MessMind home">
           <span class="brand-mark" aria-hidden="true">
             <svg viewBox="0 0 40 40" focusable="false">
               <path class="mark-stem" d="M20 23V10" />
@@ -48,24 +48,190 @@
         </div>
       </header>
 
-      <section class="welcome">
-        <p class="eyebrow">MESS KITCHEN DASHBOARD</p>
-        <h1>Plan today’s meal<br /><span>with less guesswork.</span></h1>
-        <p class="intro">Estimate how many students will eat, then plan the right amount of food.</p>
-      </section>
-
-      <section class="mode-picker" aria-labelledby="mode-picker-title">
-        <div class="mode-picker-heading">
-          <div><p class="eyebrow">PREDICTION MODE</p><h2 id="mode-picker-title">Choose how to explore</h2></div>
-          <div class="mode-options" role="group" aria-label="Choose prediction mode">
-            <button class="mode-option is-active" id="real-mode-button" type="button" aria-pressed="true">Real estimate</button>
-            <button class="mode-option" id="demo-mode-button" type="button" aria-pressed="false">Demo simulation</button>
-          </div>
+      <section class="portal-chooser" id="portal-chooser" aria-labelledby="portal-title">
+        <p class="eyebrow">WELCOME TO MESSMIND</p>
+        <h1 id="portal-title" tabindex="-1">A better meal plan<br /><span>starts together.</span></h1>
+        <p class="intro">Choose Student for a demo meal simulation or Admin for staff estimation and records.</p>
+        <div class="portal-options" role="group" aria-label="Choose your MessMind area">
+          <button class="portal-card" type="button" data-open-portal="student-login">
+            <span class="portal-card-icon" aria-hidden="true">01</span>
+            <span class="portal-card-copy"><strong>Student</strong><small>Sign in or create an account for Demo Simulation.</small></span>
+            <span class="portal-card-arrow" aria-hidden="true">→</span>
+          </button>
+          <button class="portal-card" type="button" data-open-portal="admin">
+            <span class="portal-card-icon" aria-hidden="true">02</span>
+            <span class="portal-card-copy"><strong>Admin</strong><small>Continue to staff tools.</small></span>
+            <span class="portal-card-arrow" aria-hidden="true">→</span>
+          </button>
         </div>
-        <p class="mode-description" id="mode-description">Uses staff-entered records only. If there isn’t enough history yet, MessMind will say so instead of inventing a real-data estimate.</p>
+        <p class="portal-privacy-note">Student account email is not college-verified. Student plans affect Demo Simulation only.</p>
       </section>
 
-      <section class="planner" aria-labelledby="planner-title" data-mode-panel="real">
+      <section class="admin-portal" id="admin-portal" data-portal-view hidden aria-labelledby="admin-portal-title">
+        <button class="portal-back secondary-button" type="button" data-back-to-portals>← Choose an area</button>
+        <div class="welcome portal-welcome">
+          <p class="eyebrow">MESS STAFF TOOLS</p>
+          <h1 id="admin-portal-title" tabindex="-1">Admin tools<br /><span>for the mess.</span></h1>
+          <p class="intro">Choose a quick real-data estimate or open meal records to provide approved mess data.</p>
+        </div>
+        <div class="portal-options" role="group" aria-label="Choose an admin tool">
+          <button class="portal-card" type="button" data-open-portal="staff">
+            <span class="portal-card-icon" aria-hidden="true">01</span>
+            <span class="portal-card-copy"><strong>Continue to Real Estimation</strong><small>Estimate attendance using approved staff records.</small></span>
+            <span class="portal-card-arrow" aria-hidden="true">→</span>
+          </button>
+          <a class="portal-card" href="/admin">
+            <span class="portal-card-icon" aria-hidden="true">02</span>
+            <span class="portal-card-copy"><strong>Manager Data Entry</strong><small>Provide and review approved meal records.</small></span>
+            <span class="portal-card-arrow" aria-hidden="true">→</span>
+          </a>
+        </div>
+        <p class="portal-privacy-note">Manager Data Entry requires the staff sign-in configured for this project.</p>
+      </section>
+
+      <section class="student-login" id="student-login-portal" data-portal-view hidden aria-labelledby="student-login-title">
+        <button class="portal-back secondary-button" type="button" data-back-to-portals>← Choose an area</button>
+        <div class="welcome portal-welcome">
+          <p class="eyebrow">STUDENT ACCOUNT</p>
+          <h1 id="student-login-title" tabindex="-1">Student<br /><span>sign in.</span></h1>
+          <p class="intro">Sign in or create an account to open Demo Simulation. Your email is not checked against a college.</p>
+        </div>
+        <section class="planner student-login-card" aria-labelledby="student-login-card-title">
+          <p class="eyebrow">DEMO SIMULATION · STUDENT ACCESS</p>
+          <h2 id="student-login-card-title">Your student account</h2>
+          <div class="student-auth-switch" role="tablist" aria-label="Choose sign-in or sign-up">
+            <button class="student-auth-tab is-active" type="button" role="tab" id="student-login-tab" aria-selected="true" aria-controls="student-auth-form" data-student-auth-mode="login">Sign in</button>
+            <button class="student-auth-tab" type="button" role="tab" id="student-signup-tab" aria-selected="false" aria-controls="student-auth-form" data-student-auth-mode="signup">Create account</button>
+          </div>
+          <form id="student-auth-form" role="tabpanel" aria-labelledby="student-login-tab">
+            <label for="student-auth-email">Email address</label>
+            <input id="student-auth-email" name="email" type="email" autocomplete="username" maxlength="254" required />
+            <label for="student-auth-password">Password</label>
+            <input id="student-auth-password" name="password" type="password" autocomplete="current-password" maxlength="128" required />
+            <small class="field-help" id="student-auth-password-help" hidden>Use at least 12 characters. Choose a password you do not use on other websites.</small>
+            <button class="estimate-button" id="student-auth-submit" type="submit">Sign in <span aria-hidden="true">→</span></button>
+          </form>
+          <p class="student-auth-disclosure">MessMind stores your email for sign-in, but does not verify college identity. Use a password unique to MessMind; password recovery is not available yet. Your meal plans only shape Demo Simulation and never affect Real Estimation.</p>
+          <p class="form-message" id="student-login-message" role="status" aria-live="polite"></p>
+        </section>
+      </section>
+
+      <section class="student-portal" id="student-portal" data-portal-view hidden aria-labelledby="student-portal-title">
+        <button class="portal-back secondary-button" type="button" data-back-to-portals>← Choose an area</button>
+        <div class="welcome portal-welcome">
+          <p class="eyebrow">STUDENT DASHBOARD · DEMO ONLY</p>
+          <h1 id="student-portal-title" tabindex="-1">Demo simulation<br /><span>meal forecasts.</span></h1>
+          <p class="intro">Explore generated meal predictions. No Real Estimation tools or staff records are shown in the student area.</p>
+        </div>
+        <div class="student-account-bar"><span>Signed in as <strong id="student-account-email"></strong></span><button class="secondary-button" id="student-logout" type="button">Sign out</button></div>
+
+        <section class="planner student-planner" aria-labelledby="student-plan-title">
+          <div class="planner-heading">
+            <div><p class="eyebrow">STEP 1 · REQUIRED INPUT</p><h2 id="student-plan-title">Share your meal plan</h2></div>
+            <span class="simulation-pill">REQUIRED</span>
+          </div>
+          <p class="section-intro">Submit your yes/no meal intentions for the selected date first. Combined student plans are the primary signal in Demo Simulation; they are intentions, not confirmed attendance. For a 7-day report, change the date and save a plan for every date in that week.</p>
+          <form id="student-plan-form">
+            <label for="student-plan-date">Meal date</label>
+            <input id="student-plan-date" name="meal_date" type="date" required />
+            <fieldset class="meal-choice-group">
+              <legend>Breakfast</legend>
+              <label><input type="radio" name="breakfast" value="yes" required /> Yes, I plan to eat</label>
+              <label><input type="radio" name="breakfast" value="no" /> No</label>
+            </fieldset>
+            <fieldset class="meal-choice-group">
+              <legend>Lunch</legend>
+              <label><input type="radio" name="lunch" value="yes" required /> Yes, I plan to eat</label>
+              <label><input type="radio" name="lunch" value="no" /> No</label>
+            </fieldset>
+            <fieldset class="meal-choice-group">
+              <legend>Snacks</legend>
+              <label><input type="radio" name="snacks" value="yes" required /> Yes, I plan to eat</label>
+              <label><input type="radio" name="snacks" value="no" /> No</label>
+            </fieldset>
+            <fieldset class="meal-choice-group">
+              <legend>Dinner</legend>
+              <label><input type="radio" name="dinner" value="yes" required /> Yes, I plan to eat</label>
+              <label><input type="radio" name="dinner" value="no" /> No</label>
+            </fieldset>
+            <button class="estimate-button" id="student-plan-submit" type="submit">Save required demo plan <span aria-hidden="true">→</span></button>
+            <p class="form-message" id="student-plan-message" role="status" aria-live="polite"></p>
+          </form>
+          <p class="note"><span aria-hidden="true">✦</span> Your email is used for sign-in. Meal choices are stored under a date-specific pseudonymous key and shared only as totals. They never enter official staff records or Real Estimation.</p>
+        </section>
+        <section class="result student-plan-summary" id="student-plan-summary" aria-live="polite" hidden>
+          <p class="eyebrow">AGGREGATE DEMO SIGNAL</p>
+          <h2>Your demo plan</h2>
+          <ul id="student-plan-summary-list"></ul>
+          <p class="student-plan-share-note" id="student-plan-share-note"></p>
+          <button class="secondary-button" id="student-open-demo" type="button">Continue to Demo Simulation →</button>
+        </section>
+
+        <section class="planner demo-planner" aria-labelledby="demo-title" data-mode-panel="demo" hidden>
+          <div class="planner-heading">
+            <div><p class="eyebrow">STEP 2 · DEMO SIMULATION</p><h2 id="demo-title">Run a meal simulation</h2></div>
+            <span class="simulation-pill">SIMULATED</span>
+          </div>
+          <p class="section-intro">Your submitted plan is required. For the selected date and meal, aggregate student plans drive 70–80% of the attendance forecast; the generated ML baseline supplies the rest. These are unverified intentions, and waste remains synthetic.</p>
+          <form id="demo-form">
+            <div class="field-grid">
+              <div><label for="demo-date">Meal date</label><input id="demo-date" name="meal_date" type="date" required /><small class="field-help">Menu day: <span id="demo-day-label">—</span></small></div>
+              <div><label for="demo-meal">Meal</label><select id="demo-meal" name="meal"></select></div>
+            </div>
+            <label for="demo-students">Students eligible in this simulation</label>
+            <div class="input-suffix"><input id="demo-students" name="students" type="number" min="1" max="10000" value="1000" required /><span>students</span></div>
+            <div class="demo-menu-box"><span>Menu from the provided plan · <b id="demo-time"></b></span><p id="demo-menu">Loading menu…</p></div>
+            <p class="student-signal-note demo-plan-hint" id="demo-plan-requirement" role="status" aria-live="polite">First sign in and save your student meal plan for this date above. Combined plans lead the attendance simulation and never affect Real Estimation.</p>
+            <button class="estimate-button" id="demo-submit" type="submit" disabled>Run simulated prediction <span aria-hidden="true">→</span></button>
+            <button class="secondary-button report-button" id="weekly-report-button" type="button" disabled>View 7-day demo report</button>
+            <p class="form-message demo-error" id="demo-message" aria-live="polite"></p>
+          </form>
+          <div class="demo-assumptions">
+            <strong>What is simulated?</strong>
+            <p>The weekday menu is repeated across generated weeks. A 7-day report requires at least one student plan response for every scheduled meal on every report date; it will not fill missing attendance with the generated baseline. Submitted plans drive 70–80% of attendance forecasts and the generated model supplies the rest. Suggested servings add an 8% reserve. Simulated waste assumes cooked servings of 0.38 kg for breakfast, 0.60 kg for lunch, 0.18 kg for snacks, and 0.55 kg for dinner, plus generated preparation and plate-leftover allowances. None are measured mess data. Sunday lunch is blank in the supplied plan.</p>
+          </div>
+        </section>
+
+        <section class="result demo-result" id="demo-result" aria-live="polite" data-mode-panel="demo" hidden>
+          <p class="eyebrow">SIMULATED PREDICTION</p>
+          <h2><span id="demo-expected">—</span> <small>students expected</small></h2>
+          <p class="demo-range" id="demo-range"></p>
+          <p class="student-signal-note" id="demo-plan-signal" aria-live="polite"></p>
+          <div class="demo-metrics">
+            <div><span>Suggested portions</span><strong id="demo-portions">—</strong></div>
+            <div><span>Estimated food waste</span><strong><span id="demo-waste">—</span> kg</strong></div>
+          </div>
+          <p id="demo-result-detail"></p>
+          <p class="synthetic-evaluation" id="synthetic-evaluation"></p>
+        </section>
+
+        <section class="result weekly-report" id="weekly-report" aria-labelledby="weekly-report-title" data-mode-panel="demo" hidden>
+          <p class="eyebrow">SIMULATED REPORT</p>
+          <h2 id="weekly-report-title">Seven-day menu outlook</h2>
+          <div class="demo-metrics">
+            <div><span>Estimated meal servings</span><strong id="weekly-servings">—</strong></div>
+            <div><span>Estimated food waste</span><strong><span id="weekly-waste">—</span> kg</strong></div>
+          </div>
+          <p id="weekly-highest" class="demo-range"></p>
+          <div class="table-wrap">
+            <table class="report-table">
+              <thead><tr><th>Day / date</th><th>Meal servings*</th><th>Estimated waste</th></tr></thead>
+              <tbody id="weekly-days"></tbody>
+            </table>
+          </div>
+          <p class="synthetic-evaluation" id="weekly-note"></p>
+        </section>
+      </section>
+
+      <div class="staff-portal" id="staff-portal" data-portal-view hidden aria-labelledby="staff-portal-title">
+      <button class="portal-back secondary-button" type="button" data-back-to-admin>← Admin options</button>
+      <section class="welcome">
+        <p class="eyebrow">REAL ESTIMATION · STAFF</p>
+        <h1 id="staff-portal-title" tabindex="-1">Plan today’s meal<br /><span>with less guesswork.</span></h1>
+        <p class="intro">Estimate attendance using approved, non-demo staff records.</p>
+      </section>
+
+      <section class="planner" aria-labelledby="planner-title" data-mode-panel="real" hidden>
         <div class="planner-heading">
           <div><p class="eyebrow">QUICK ESTIMATE</p><h2 id="planner-title">Meal details</h2></div>
           <span class="step-badge">01 <span>/ 02</span></span>
@@ -93,63 +259,11 @@
         <p class="historical-waste" id="historical-waste"></p>
       </section>
 
-      <section class="planner demo-planner" aria-labelledby="demo-title" data-mode-panel="demo" hidden>
-        <div class="planner-heading">
-          <div><p class="eyebrow">HACKATHON DEMO</p><h2 id="demo-title">Try a meal simulation</h2></div>
-          <span class="simulation-pill">SIMULATED</span>
-        </div>
-        <p class="section-intro">Explore how MessMind could estimate meal attendance and food waste from a menu. Every training value and result here is generated for demonstration.</p>
-        <form id="demo-form">
-          <div class="field-grid">
-            <div><label for="demo-day">Weekday</label><select id="demo-day" name="day"></select></div>
-            <div><label for="demo-meal">Meal</label><select id="demo-meal" name="meal"></select></div>
-          </div>
-          <label for="demo-students">Students eligible in this simulation</label>
-          <div class="input-suffix"><input id="demo-students" name="students" type="number" min="1" max="10000" value="1000" required /><span>students</span></div>
-          <div class="demo-menu-box"><span>Menu from the provided plan · <b id="demo-time"></b></span><p id="demo-menu">Loading menu…</p></div>
-          <button class="estimate-button" id="demo-submit" type="submit">Run simulated prediction <span aria-hidden="true">→</span></button>
-          <button class="secondary-button report-button" id="weekly-report-button" type="button">View 7-day demo report</button>
-          <p class="form-message demo-error" id="demo-message" aria-live="polite"></p>
-        </form>
-        <div class="demo-assumptions">
-          <strong>What is simulated?</strong>
-          <p>The weekday menu is repeated across eight generated weeks, starting with 1,000 eligible students. Suggested servings add an 8% reserve. Simulated waste assumes cooked servings of 0.38 kg for breakfast, 0.60 kg for lunch, 0.18 kg for snacks, and 0.55 kg for dinner, plus a generated 6%–11% preparation reserve and 20–55 g of plate leftovers. None are measured mess data. Sunday lunch is blank in the supplied plan.</p>
-        </div>
-      </section>
-
-      <section class="result demo-result" id="demo-result" aria-live="polite" data-mode-panel="demo" hidden>
-        <p class="eyebrow">SIMULATED PREDICTION</p>
-        <h2><span id="demo-expected">—</span> <small>students expected</small></h2>
-        <p class="demo-range" id="demo-range"></p>
-        <div class="demo-metrics">
-          <div><span>Suggested portions</span><strong id="demo-portions">—</strong></div>
-          <div><span>Estimated food waste</span><strong><span id="demo-waste">—</span> kg</strong></div>
-        </div>
-        <p id="demo-result-detail"></p>
-        <p class="synthetic-evaluation" id="synthetic-evaluation"></p>
-      </section>
-
-      <section class="result weekly-report" id="weekly-report" aria-labelledby="weekly-report-title" data-mode-panel="demo" hidden>
-        <p class="eyebrow">SIMULATED REPORT</p>
-        <h2 id="weekly-report-title">Seven-day menu outlook</h2>
-        <div class="demo-metrics">
-          <div><span>Estimated meal servings</span><strong id="weekly-servings">—</strong></div>
-          <div><span>Estimated food waste</span><strong><span id="weekly-waste">—</span> kg</strong></div>
-        </div>
-        <p id="weekly-highest" class="demo-range"></p>
-        <div class="table-wrap">
-          <table class="report-table">
-            <thead><tr><th>Day</th><th>Meal servings*</th><th>Estimated waste</th></tr></thead>
-            <tbody id="weekly-days"></tbody>
-          </table>
-        </div>
-        <p class="synthetic-evaluation" id="weekly-note"></p>
-      </section>
-
-      <footer>Made for smarter, less wasteful meals. <a class="staff-link" href="/admin">Mess staff</a></footer>
+      <footer>Made for smarter, less wasteful meals.</footer>
+      </div>
     </main>
-    <script src="app.js"></script>
-    <script src="demo.js"></script>
+    <script src="app.js?v=student-auth-20260927-1"></script>
+    <script src="demo.js?v=student-auth-20260927-1"></script>
     <script type="module" src="effects/sketchbook/mount.js"></script>
   </body>
 </html>

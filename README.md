@@ -4,7 +4,7 @@
 
 MessMind is a meal-planning prototype for hostel mess kitchens. Staff can record aggregate meal totals, and the app can use that history to estimate attendance and measured food waste. A separate demo mode lets people explore the idea with generated examples based on the supplied menu plan.
 
-> **Important:** Demo results are simulations, not college measurements or validated kitchen recommendations. Real estimates use only staff-entered, non-demo records. Do not enter student names, IDs, room numbers, or other personal data.
+> **Important:** Demo results are simulations, not college measurements or validated kitchen recommendations. Real estimates use only staff-entered, non-demo records. Student accounts store an email address for sign-in, but do not verify college identity. Do not enter student names, IDs, room numbers, or other personal details.
 
 [Open the live MessMind app](https://messmind-delta.vercel.app/) · [OpenAPI docs](https://messmind-delta.vercel.app/docs) · [Health check](https://messmind-delta.vercel.app/health)
 
@@ -14,16 +14,19 @@ MessMind is a meal-planning prototype for hostel mess kitchens. Staff can record
 - Explore a weekday, meal, and menu from the supplied menu plan, including suggested portions and illustrative waste.
 - View a simulated seven-day report.
 - Use the staff page to add and correct aggregate meal records, check data readiness, and export non-demo records as CSV.
+- Create a student account with an email address and password to use Demo Simulation. Email addresses are not checked against a college.
 - Switch between light and dark themes. The home page also includes the interactive sketchbook background.
 
 ## Try the live demo
 
 1. Open the [MessMind app](https://messmind-delta.vercel.app/).
-2. Choose **Demo simulation**.
-3. Select a weekday and meal, adjust the eligible student count if you like, and choose **Run simulated prediction**.
+2. Choose **Student**, create an account or sign in, then submit a complete yes/no meal plan for a date.
+3. Select the date and meal, set the eligible student count, and choose **Run simulated prediction**. Aggregate student plans are the primary attendance signal for that date and meal; the generated model supplies the remaining share.
 4. Choose **View 7-day demo report** to see a simulated outlook for the supplied menu plan.
 
-The demo starts with 1,000 eligible students per meal as an editable example. Its attendance, portion, and waste values are generated assumptions. The report counts meal visits across the week; it does not count unique students.
+The demo starts with 1,000 eligible students per meal as an editable example. For a date and meal with submitted student plans, those unverified intentions account for 70–80% of its simulated attendance forecast; the generated model supplies the rest. A seven-day report requires student plan responses for every scheduled meal on every date in the report; it does not silently fill missing dates with the generated baseline. Portion and waste values remain synthetic assumptions. The report counts meal visits across the week; it does not count unique students.
+
+Student accounts store an email address and a salted password hash. Passwords are not stored in plain text. Email addresses are not verified, so an account does not prove that someone attends a particular college. Student plans are stored separately under a date-specific participant hash; other students see combined totals, not individual choices. Use a password unique to MessMind. Sign-in sessions expire after 14 days or when the student signs out.
 
 The **Real estimate** mode may say that there is not enough history yet. That is expected: it does not fill gaps with demo values.
 
@@ -49,26 +52,30 @@ These thresholds and checks make the prototype cautious about limited history. T
 
 ### Demo simulation
 
-The supplied workbook contains menu names, not measured attendance or waste. For demonstration, **ml/generate_demo_data.py** repeats the menu scenarios across eight simulated weeks and creates synthetic training examples. The generator is seeded so the examples can be reproduced.
+The supplied workbook contains menu names, not measured attendance or waste. For demonstration, `ml/generate_demo_data.py` repeats the menu scenarios across eight simulated weeks and creates synthetic training examples. The generator is seeded so the examples can be reproduced.
 
 - The simulation dataset contains **216 generated examples**: **189** are used to fit the demo model and **27** from the final simulated week are held out for an illustrative check.
+- A signed-in student must submit their yes/no intentions for a date before running that date's demo simulation or report.
+- Aggregate student plans are the primary attendance signal for matching date-and-meal predictions; their influence grows from 70% toward 80% as more responses are submitted.
 - The default eligible group is 1,000 students, but the demo form lets you change it.
 - Suggested portions add an 8% reserve to simulated expected attendance.
 - Synthetic waste assumes cooked portions of 0.38 kg for breakfast, 0.60 kg for lunch, 0.18 kg for snacks, and 0.55 kg for dinner, plus a generated preparation reserve and plate leftovers.
 - The displayed range and error metrics come from generated holdout examples. They are **not** a confidence interval and do **not** measure real-world accuracy.
 - Sunday lunch is blank in the source menu plan and is omitted from simulations and reports.
 
-The generated CSV is included at [ml/data/demo_training_data.csv](ml/data/demo_training_data.csv). Recreate it from the repository root with:
+The generated CSV is included at [`ml/data/demo_training_data.csv`](ml/data/demo_training_data.csv). Recreate it from the repository root with:
 
-~~~bash
+```bash
 python -m ml.generate_demo_data
-~~~
+```
 
 The Python demo model uses the same generator to build and check its examples; the CSV is provided so the synthetic dataset can also be inspected.
 
-## Staff records and data handling
+## Student accounts, staff records, and data handling
 
-Open **/admin** on the live app or at **http://127.0.0.1:8000/admin** when running locally. Staff access uses HTTP Basic authentication. Set a private username and password in the environment before using the page.
+Student sign-up and sign-in use the `/auth/student/*` routes. A successful sign-in sets an HTTP-only session cookie. On Vercel, student accounts require the persistent PostgreSQL database configured by `DATABASE_URL`; account creation is refused when only temporary `/tmp` storage is available. No email verification, password reset, or college identity check is implemented yet.
+
+Open `/admin` on the live app or at `http://127.0.0.1:8000/admin` when running locally. Staff access uses HTTP Basic authentication. Set a private username and password in the environment before using the page.
 
 Each record contains an aggregate meal date, meal, menu, number of eligible students, and number of meals served. Prepared portions and total discarded food in kilograms are optional. Enter waste only when it was measured consistently; leave it blank otherwise. Do not enter names, student IDs, room numbers, or individual attendance details.
 
@@ -81,9 +88,9 @@ Each record contains an aggregate meal date, meal, menu, number of eligible stud
 
 ### Storage and production safety
 
-Local development uses SQLite at **backend/messmind.db** by default. For hosted use, configure persistent PostgreSQL storage through a private **DATABASE_URL** (Neon is supported). SQLite files on Vercel's temporary filesystem do not provide durable record storage.
+Local development uses SQLite at `backend/messmind.db` by default. For hosted use, configure persistent PostgreSQL storage through a private `DATABASE_URL` (Neon is supported). SQLite files on Vercel's temporary filesystem do not provide durable record storage.
 
-On Vercel, adding or editing non-demo records is enabled only when both a persistent database URL is present and **MESSMIND_ENABLE_REAL_RECORDS=true** is set. Keep those settings in the hosting provider's private environment variables, never in frontend code or a committed **.env** file. Enable real collection only after the college or mess has approved it and persistent storage has been checked.
+On Vercel, adding or editing non-demo records is enabled only when both a persistent database URL is present and `MESSMIND_ENABLE_REAL_RECORDS=true` is set. Keep those settings in the hosting provider's private environment variables, never in frontend code or a committed `.env` file. Enable real collection only after the college or mess has approved it and persistent storage has been checked.
 
 ## Run locally
 
@@ -93,78 +100,84 @@ Requirements: **Python 3.12 or newer**.
 
 From the repository root:
 
-~~~powershell
+```powershell
 py -m venv .venv
 .\.venv\Scripts\Activate.ps1
 py -m pip install -r requirements.txt
 Copy-Item backend\.env.example backend\.env
 notepad backend\.env
-~~~
+```
 
-In **backend/.env**, set a private **MESSMIND_ADMIN_PASSWORD**. The default local username is **mess-manager**; you can change it with **MESSMIND_ADMIN_USERNAME**. Leave **DATABASE_URL** empty to use local SQLite. Then start the app from the repository root:
+In `backend/.env`, set a private `MESSMIND_ADMIN_PASSWORD`. The default local username is `mess-manager`; you can change it with `MESSMIND_ADMIN_USERNAME`. Leave `DATABASE_URL` empty to use local SQLite. Then start the app from the repository root:
 
-~~~powershell
+```powershell
 py -m uvicorn main:app --app-dir backend --reload
-~~~
+```
 
 ### macOS or Linux
 
 From the repository root:
 
-~~~bash
+```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install -r requirements.txt
 cp backend/.env.example backend/.env
-~~~
+```
 
-Edit **backend/.env** and set a private **MESSMIND_ADMIN_PASSWORD**, then run:
+Edit `backend/.env` and set a private `MESSMIND_ADMIN_PASSWORD`, then run:
 
-~~~bash
+```bash
 python -m uvicorn main:app --app-dir backend --reload
-~~~
+```
 
-The local **.env** file is ignored by Git. Never replace it with a real credential in **.env.example** or commit it.
+The local `.env` file is ignored by Git. Never replace it with a real credential in `.env.example` or commit it.
 
 | Local URL | Purpose |
 | --- | --- |
-| **http://127.0.0.1:8000/** | Student-facing planner and demo |
-| **http://127.0.0.1:8000/admin** | Staff records (browser sign-in required) |
-| **http://127.0.0.1:8000/docs** | Interactive FastAPI documentation |
-| **http://127.0.0.1:8000/health** | API health check |
+| `http://127.0.0.1:8000/` | Student-facing planner and demo |
+| `http://127.0.0.1:8000/admin` | Staff records (browser sign-in required) |
+| `http://127.0.0.1:8000/docs` | Interactive FastAPI documentation |
+| `http://127.0.0.1:8000/health` | API health check |
 
 ## API overview
 
-Interactive request/response schemas are available at **/docs**.
+Interactive request/response schemas are available at `/docs`.
 
 | Method | Route | Access | Purpose |
 | --- | --- | --- | --- |
-| **GET** | **/health** | Public | API health check |
-| **GET** | **/demo/menu-plan** | Public | Supplied menus and simulation assumptions |
-| **POST** | **/demo/predict** | Public | Simulate one day and meal; does not save a record |
-| **POST** | **/demo/weekly-report** | Public | Generate a seven-day simulation report; does not save records |
-| **POST** | **/predict** | Public | Estimate attendance and, when available, measured waste from non-demo history |
-| **GET** | **/model/readiness** | Staff | Aggregate real-record counts and model thresholds |
-| **GET** | **/records** | Staff | List saved aggregate records |
-| **POST** | **/records** | Staff | Add a real or demo aggregate record |
-| **PUT** | **/records/{id}** | Staff | Correct a record without changing its type |
-| **DELETE** | **/records/{id}** | Staff | Delete a demo record only |
-| **GET** | **/records/export.csv** | Staff | Download non-demo aggregate records as CSV |
+| `GET` | `/health` | Public | API health check |
+| `GET` | `/demo/menu-plan` | Public | Supplied menus and simulation assumptions |
+| `POST` | `/auth/student/signup` | Public | Create a student account and start a session |
+| `POST` | `/auth/student/login` | Public | Sign in and start a session |
+| `GET` | `/auth/student/session` | Public | Check whether the browser has an active student session |
+| `POST` | `/auth/student/logout` | Public | End the browser's student session |
+| `GET` | `/demo/student-plans` | Student | Read combined counts and the signed-in student's saved plan |
+| `POST` | `/demo/student-plans` | Student | Save or update the signed-in student's demo meal plan |
+| `POST` | `/demo/predict` | Student | Simulate one day and meal; does not save a record |
+| `POST` | `/demo/weekly-report` | Student | Generate a seven-day simulation report only when every scheduled date and meal has a student plan; does not save records |
+| `POST` | `/predict` | Public | Estimate attendance and, when available, measured waste from non-demo history |
+| `GET` | `/model/readiness` | Staff | Aggregate real-record counts and model thresholds |
+| `GET` | `/records` | Staff | List saved aggregate records |
+| `POST` | `/records` | Staff | Add a real or demo aggregate record |
+| `PUT` | `/records/{id}` | Staff | Correct a record without changing its type |
+| `DELETE` | `/records/{id}` | Staff | Delete a demo record only |
+| `GET` | `/records/export.csv` | Staff | Download non-demo aggregate records as CSV |
 
-Staff routes use the configured HTTP Basic credentials. The browser may show a username/password prompt when opening **/admin** or a staff-only route.
+Staff routes use the configured HTTP Basic credentials. The browser may show a username/password prompt when opening `/admin` or a staff-only route.
 
 ## Deploy on Vercel
 
-This repository is configured for the Python FastAPI app through the Vercel entry point in **pyproject.toml**. The live deployment uses Neon PostgreSQL for persistent hosted storage.
+This repository is configured for the Python FastAPI app through the Vercel entry point in `pyproject.toml`. The live deployment uses Neon PostgreSQL for persistent hosted storage.
 
 Configure these as private Vercel project environment variables:
 
 | Variable | Purpose |
 | --- | --- |
-| **DATABASE_URL** | Private PostgreSQL connection string; Vercel's Neon integration can provide it |
-| **MESSMIND_ADMIN_USERNAME** | Staff sign-in username |
-| **MESSMIND_ADMIN_PASSWORD** | Staff sign-in password |
-| **MESSMIND_ENABLE_REAL_RECORDS** | Set to **true** only after persistent storage is connected and real-data collection is approved |
+| `DATABASE_URL` | Private PostgreSQL connection string; Vercel's Neon integration can provide it |
+| `MESSMIND_ADMIN_USERNAME` | Staff sign-in username |
+| `MESSMIND_ADMIN_PASSWORD` | Staff sign-in password |
+| `MESSMIND_ENABLE_REAL_RECORDS` | Set to `true` only after persistent storage is connected and real-data collection is approved |
 
 Redeploy after changing deployment environment variables. Never put these values in the README, frontend JavaScript, screenshots, or Git history.
 
@@ -179,7 +192,7 @@ Redeploy after changing deployment environment variables. Never put these values
 
 ## Repository layout
 
-~~~text
+```text
 MessMind/
 ├── backend/
 │   ├── main.py                 # FastAPI routes, storage, validation, and authentication
@@ -203,7 +216,7 @@ MessMind/
 ├── requirements.txt
 ├── pyproject.toml
 └── README.md
-~~~
+```
 
 ## Limitations and next steps
 
@@ -211,12 +224,11 @@ MessMind/
 - Synthetic holdout metrics test the demo model against its own generated rules; they do not establish real-world accuracy.
 - Real estimates become useful only after enough approved, consistently entered records exist. Waste estimates additionally require actual waste measurements.
 - The real model uses simple menu and weekday features and falls back to a same-meal average when the more complex model does not validate better. Compare estimates with observed kitchen results before relying on them for preparation decisions.
-- The app stores aggregate totals only. It is not designed to collect student-level attendance or personal information.
+- The app does not collect student names, IDs, or room numbers. Student account emails are stored for sign-in, while meal plans are stored under a date-specific participant hash and exposed to predictions as combined totals.
 
 ## Author
 
 Built by [@sahityadhiman](https://github.com/sahityadhiman).
-
 
 ## Admin page
 
