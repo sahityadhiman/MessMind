@@ -280,7 +280,7 @@ footer { color: var(--muted); text-align: center; font-size: 11px; padding-top: 
 .portal-card-copy small { color: var(--body-copy); font-size: 11px; line-height: 1.45; }
 .portal-card-arrow { margin: 0; color: var(--green); text-align: right; font-size: 21px; }
 .portal-privacy-note { margin: 15px 3px 0; color: var(--note-copy); font-size: 10px; line-height: 1.55; }
-.portal-back { min-height: 30px; margin: 8px 0 0; padding: 0 9px; font-size: 10px; line-height: 1.2; }
+.portal-back { position: relative; top: 22px; min-height: 30px; margin: 8px 0 0; padding: 0 9px; font-size: 10px; line-height: 1.2; }
 .portal-welcome { padding-top: 38px; }
 .student-login-card h2 { font-size: 20px; }
 .student-login-card .section-intro { margin: 10px 0 13px; max-width: none; }
