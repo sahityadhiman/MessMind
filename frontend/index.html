@@ -4,7 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>MessMind — Meal planner</title>
-    <link rel="stylesheet" href="styles.css?v=student-auth-20260927-1" />
+    <link rel="stylesheet" href="styles.css?v=ngo-handoff-20261001-1" />
     <link rel="stylesheet" href="effects/sketchbook/threeui.css" />
     <link rel="stylesheet" href="effects/sketchbook/host.css" />
     <script>
@@ -72,7 +72,7 @@
         <div class="welcome portal-welcome">
           <p class="eyebrow">MESS STAFF TOOLS</p>
           <h1 id="admin-portal-title" tabindex="-1">Admin tools<br /><span>for the mess.</span></h1>
-          <p class="intro">Choose a quick real-data estimate or open meal records to provide approved mess data.</p>
+          <p class="intro">Choose Real Estimation, enter approved meal records, or manage the separate safe-surplus NGO workflow.</p>
         </div>
         <div class="portal-options" role="group" aria-label="Choose an admin tool">
           <button class="portal-card" type="button" data-open-portal="staff">
@@ -85,8 +85,13 @@
             <span class="portal-card-copy"><strong>Manager Data Entry</strong><small>Provide and review approved meal records.</small></span>
             <span class="portal-card-arrow" aria-hidden="true">→</span>
           </a>
+          <a class="portal-card" href="/admin/ngo">
+            <span class="portal-card-icon" aria-hidden="true">03</span>
+            <span class="portal-card-copy"><strong>NGO Connect</strong><small>Register an approved partner and track safe surplus handovers.</small></span>
+            <span class="portal-card-arrow" aria-hidden="true">→</span>
+          </a>
         </div>
-        <p class="portal-privacy-note">Manager Data Entry requires the staff sign-in configured for this project.</p>
+        <p class="portal-privacy-note">Staff tools require the configured staff sign-in. NGO Connect is for approved partners; it does not send messages automatically.</p>
       </section>
 
       <section class="student-login" id="student-login-portal" data-portal-view hidden aria-labelledby="student-login-title">
@@ -250,6 +255,10 @@
           <button class="estimate-button" type="submit">Estimate attendance <span aria-hidden="true">→</span></button>
         </form>
         <p class="note"><span aria-hidden="true">✦</span> Uses non-demo staff records only. The app starts with a same-meal average, then uses the menu and weekday only if a real-data model beats that average on a time-ordered check.</p>
+        <div class="ngo-handoff-note">
+          <p>After the meal, if safe, untouched surplus remains, use NGO Connect to record the actual amount and coordinate a handover. Predictions and recorded waste never create a donation offer automatically.</p>
+          <a class="secondary-button ngo-handoff-link" id="ngo-after-meal-link" href="/admin/ngo">Open NGO Connect <span aria-hidden="true">→</span></a>
+        </div>
       </section>
 
       <section class="result" id="result" aria-live="polite" data-mode-panel="real" hidden>
@@ -262,7 +271,7 @@
       <footer>Made for smarter, less wasteful meals.</footer>
       </div>
     </main>
-    <script src="app.js?v=student-auth-20260927-1"></script>
+    <script src="app.js?v=ngo-handoff-20261001-1"></script>
     <script src="demo.js?v=student-auth-20260927-1"></script>
     <script type="module" src="effects/sketchbook/mount.js"></script>
   </body>

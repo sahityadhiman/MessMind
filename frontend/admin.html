@@ -10,7 +10,7 @@
     <main class="app-shell">
       <header class="topbar">
         <a class="brand" href="/" aria-label="MessMind home"><span class="brand-mark">M</span> MessMind</a>
-        <span class="today">Staff records</span>
+        <div class="admin-top-actions"><a class="secondary-button" href="/admin/ngo">NGO Connect</a><span class="today">Staff records</span></div>
       </header>
 
       <section class="welcome">
@@ -37,7 +37,7 @@
           <label for="record-date">Date</label>
           <input id="record-date" name="meal_date" type="date" required />
           <label for="record-meal">Meal</label>
-          <select id="record-meal" name="meal"><option>Breakfast</option><option>Lunch</option><option>Dinner</option></select>
+          <select id="record-meal" name="meal"><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select>
           <label for="record-menu">Menu</label>
           <input id="record-menu" name="menu" placeholder="e.g. Rice and dal" required />
           <div class="field-grid">
@@ -53,6 +53,22 @@
           <button id="record-submit" type="submit">Save meal record <span aria-hidden="true">→</span></button>
           <p class="form-message" id="record-message" aria-live="polite"></p>
         </form>
+        <section class="readiness-card csv-import-card" aria-labelledby="csv-import-title">
+          <div class="planner-heading"><div><p class="eyebrow">HISTORICAL DATA</p><h3 id="csv-import-title">Import approved meal records</h3></div><a class="secondary-button download-button" href="/records/import-template.csv">Download CSV template</a></div>
+          <p>Choose a UTF-8 CSV with aggregate totals only. Preview checks every row, required values, and duplicate date-and-meal entries before anything is saved. Blank prepared or waste cells stay unknown; every imported row is marked REAL.</p>
+          <form id="csv-import-form">
+            <label for="csv-file">Meal records CSV</label>
+            <input id="csv-file" name="file" type="file" accept=".csv,text/csv" required />
+            <button class="secondary-button" id="csv-preview-button" type="submit">Preview CSV</button>
+            <p class="form-message" id="csv-import-message" aria-live="polite"></p>
+          </form>
+          <div id="csv-preview-panel" hidden>
+            <strong id="csv-preview-summary"></strong>
+            <div class="table-wrap"><table class="admin-record-table"><thead><tr><th>Date</th><th>Meal and menu</th><th>Served / eligible</th><th>Prepared</th><th>Waste kg</th></tr></thead><tbody id="csv-preview-rows"></tbody></table></div>
+            <label class="demo-toggle csv-confirm" for="csv-confirm-real"><input id="csv-confirm-real" type="checkbox" /><span>I reviewed this file. It contains only college-approved aggregate real records, with no student names, IDs, or other personal details.</span></label>
+            <button id="csv-import-button" type="button" disabled>Import all real records</button>
+          </div>
+        </section>
         <div class="records-heading"><h3>Saved records</h3><div class="records-tools"><span id="record-count">0 records</span><a class="secondary-button download-button" href="/records/export.csv">Download real CSV</a></div></div>
         <div class="table-wrap">
           <table class="admin-record-table">
@@ -64,6 +80,6 @@
       </section>
       <footer><a class="staff-link" href="/">← Back to estimate page</a></footer>
     </main>
-    <script src="admin.js"></script>
+    <script src="admin.js?v=csv-import-20261002-1"></script>
   </body>
 </html>

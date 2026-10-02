@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>MessMind — NGO Connect</title>
+    <link rel="stylesheet" href="/styles.css?v=ngo-connect-20261001-2" />
+    <script>
+      try {
+        const savedTheme = localStorage.getItem('messmind-theme');
+        document.documentElement.dataset.theme = savedTheme ||
+          (matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+      } catch {
+        document.documentElement.dataset.theme = 'light';
+      }
+    </script>
+  </head>
+  <body>
+    <main class="app-shell ngo-shell">
+      <header class="topbar">
+        <a class="brand" href="/" aria-label="MessMind home"><span class="brand-mark">M</span> MessMind</a>
+        <div class="admin-top-actions">
+          <button class="theme-toggle" id="theme-toggle" type="button" aria-label="Switch to dark mode" aria-pressed="false" title="Switch to dark mode">
+            <svg class="theme-icon moon-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M20.2 15.1A8.3 8.3 0 0 1 8.9 3.8 8.4 8.4 0 1 0 20.2 15.1Z" /></svg>
+            <svg class="theme-icon sun-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="3.6" /><path d="M12 2v2.1M12 19.9V22M4.93 4.93l1.48 1.48m11.18 11.18 1.48 1.48M2 12h2.1m15.8 0H22M4.93 19.07l1.48-1.48M17.59 6.41l1.48-1.48" /></svg>
+            <span id="theme-label">Dark</span>
+          </button>
+          <a class="secondary-button ngo-top-link" href="/admin">Meal records</a>
+        </div>
+      </header>
+
+      <section class="welcome">
+        <p class="eyebrow">STAFF · SAFE SURPLUS FOOD RESCUE</p>
+        <h1>Connect safe surplus.<br /><span>Track every handover.</span></h1>
+        <p class="intro">Real Estimation helps the mess plan before cooking. This separate workflow records only safe, untouched food that was not served, if surplus remains.</p>
+      </section>
+
+      <section class="ngo-notice" aria-live="polite">
+        <span class="ngo-notice-mark" aria-hidden="true">i</span>
+        <div>
+          <strong id="ngo-setup-title">Partner setup is pending</strong>
+          <p id="ngo-setup-message">Add an NGO only after the college confirms the partnership and pickup process. MessMind does not send NGO notifications yet; staff must contact the partner directly.</p>
+        </div>
+      </section>
+
+      <section class="ngo-summary-grid" aria-label="Surplus rescue totals">
+        <article><span>Offers recorded</span><strong id="ngo-offer-count">0</strong></article>
+        <article><span>Awaiting pickup</span><strong id="ngo-pending-count">0</strong></article>
+        <article><span>Food distributed</span><strong><span id="ngo-distributed-kg">0.0</span> kg</strong></article>
+      </section>
+
+      <section class="planner ngo-panel" aria-labelledby="partner-title">
+        <div class="planner-heading">
+          <div><p class="eyebrow">PARTNER DIRECTORY</p><h2 id="partner-title">Approved NGO partners</h2></div>
+          <span class="ngo-counter" id="active-partner-count">0 active</span>
+        </div>
+        <p class="section-intro">New entries start as pending approval. Activate a partner only after the college confirms the organization, contact, collection coverage, and safe-handling arrangements.</p>
+        <form id="partner-form" class="ngo-form">
+          <div class="field-grid">
+            <div><label for="partner-name">Organization name</label><input id="partner-name" name="organization_name" maxlength="160" required /></div>
+            <div><label for="partner-area">Service / pickup area</label><input id="partner-area" name="service_area" maxlength="160" placeholder="e.g. Gharuan and nearby area" required /></div>
+          </div>
+          <div class="field-grid">
+            <div><label for="partner-contact">Contact person <span class="optional-label">optional</span></label><input id="partner-contact" name="contact_person" maxlength="120" /></div>
+            <div><label for="partner-phone">Contact phone</label><input id="partner-phone" name="contact_phone" type="tel" maxlength="40" autocomplete="tel" /></div>
+          </div>
+          <div class="field-grid">
+            <div><label for="partner-email">Contact email</label><input id="partner-email" name="contact_email" type="email" maxlength="254" autocomplete="email" /></div>
+            <div><label for="partner-food-notes">Food accepted / pickup notes <span class="optional-label">optional</span></label><input id="partner-food-notes" name="accepted_food_notes" maxlength="300" placeholder="Food types, timing, capacity" /></div>
+          </div>
+          <p class="ngo-contact-privacy">Provide at least one phone number or email address. Contact details are visible only to authorized staff; enter them only with the organization’s permission. MessMind does not send messages.</p>
+          <button id="partner-submit" type="submit">Save partner for approval <span aria-hidden="true">→</span></button>
+          <p class="form-message" id="partner-message" aria-live="polite"></p>
+        </form>
+        <div id="partner-list" class="ngo-list" aria-live="polite"></div>
+        <p class="empty-records" id="partners-empty">No NGO partners have been added.</p>
+      </section>
+
+      <section class="planner ngo-panel" aria-labelledby="offer-title">
+        <div class="planner-heading">
+          <div><p class="eyebrow">ACTUAL SURPLUS · NOT A PREDICTION</p><h2 id="offer-title">Offer a safe surplus</h2></div>
+          <span class="ngo-counter">Staff confirmed</span>
+        </div>
+        <p class="section-intro">Create an offer only after checking the food in person. Never offer plate leftovers, food that has already been served, or food whose safety is uncertain. The app will not treat recorded waste or predicted surplus as donation stock.</p>
+        <form id="offer-form" class="ngo-form">
+          <div class="field-grid">
+            <div><label for="offer-date">Meal date</label><input id="offer-date" name="meal_date" type="date" required /></div>
+            <div><label for="offer-meal">Meal</label><select id="offer-meal" name="meal"><option>Breakfast</option><option>Lunch</option><option>Snacks</option><option>Dinner</option></select></div>
+          </div>
+          <div class="field-grid">
+            <div><label for="offer-donor">Donating mess / kitchen</label><input id="offer-donor" name="donor_name" maxlength="160" required /></div>
+            <div><label for="offer-pickup-location">Exact pickup location</label><input id="offer-pickup-location" name="pickup_location" maxlength="240" placeholder="Building, gate, or kitchen location" required /></div>
+          </div>
+          <label for="offer-food">Food / items in this offer</label><input id="offer-food" name="food_description" maxlength="200" placeholder="e.g. Dal, rice and chapati" required />
+          <div class="field-grid">
+            <div><label for="offer-category">Food type for label</label><select id="offer-category" name="food_category"><option value="vegetarian">Vegetarian</option><option value="non_vegetarian">Non-vegetarian</option><option value="mixed">Mixed</option></select></div>
+            <div><label for="offer-quantity">Safe surplus measured (kg)</label><input id="offer-quantity" name="offered_quantity_kg" type="number" min="0.1" max="10000" step="0.1" required /></div>
+          </div>
+          <div class="field-grid">
+            <div><label for="offer-prepared">Prepared at</label><input id="offer-prepared" name="prepared_at" type="datetime-local" required /></div>
+            <div><label for="offer-consume-by">Safe to consume by</label><input id="offer-consume-by" name="consume_by" type="datetime-local" required /></div>
+          </div>
+          <div class="field-grid">
+            <div><label for="offer-temp">Storage temperature (°C)</label><input id="offer-temp" name="storage_temperature_c" type="number" min="-50" max="100" step="0.1" required /></div>
+            <div><label for="offer-partner">Approved NGO partner</label><select id="offer-partner" name="partner_id" required disabled><option value="">No active partner yet</option></select></div>
+          </div>
+          <label for="offer-batch">Kitchen batch / preparation reference <span class="optional-label">optional</span></label><input id="offer-batch" name="batch_reference" maxlength="80" placeholder="Use the mess's existing batch reference, if available" />
+          <label for="offer-allergens">Allergens / ingredient information <span class="optional-label">optional</span></label><input id="offer-allergens" name="allergen_notes" maxlength="300" placeholder="Known allergens or cross-contact notes" />
+          <label for="offer-handling">Storage and handling notes <span class="optional-label">optional</span></label><input id="offer-handling" name="handling_notes" maxlength="500" placeholder="Keep chilled, sealed container, pickup point, etc." />
+          <label class="ngo-confirm" for="safe-unserved-confirmed"><input id="safe-unserved-confirmed" type="checkbox" required /><span>I checked this food: it is safe, untouched, and has not been served.</span></label>
+          <button id="offer-submit" type="submit" disabled>Record surplus offer <span aria-hidden="true">→</span></button>
+          <p class="form-message" id="offer-message" aria-live="polite"></p>
+        </form>
+        <div class="ngo-history-heading"><h3>Surplus offer log</h3><button class="secondary-button" id="refresh-ngo" type="button">Refresh</button></div>
+        <div id="offer-list" class="ngo-list" aria-live="polite"></div>
+        <p class="empty-records" id="offers-empty">No surplus offers recorded yet.</p>
+      </section>
+
+      <footer class="ngo-footer"><a href="https://www.fssai.gov.in/upload/uploadfiles/files/Gazette_Notification_Surplus_Food_06_08_2019.pdf" target="_blank" rel="noopener noreferrer">Read FSSAI surplus-food regulations</a><span>Confirm current college policy and safe-handling requirements before any real pickup.</span><a class="staff-link" href="/">← Back to MessMind</a></footer>
+    </main>
+    <script src="/ngo.js?v=ngo-connect-20261001-2"></script>
+  </body>
+</html>

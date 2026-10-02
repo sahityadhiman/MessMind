@@ -395,6 +395,21 @@ const forecastDate = document.querySelector('#forecast-date');
 if (forecastDate) {
   forecastDate.value = todayISODate();
 }
+const ngoAfterMealLink = document.querySelector('#ngo-after-meal-link');
+function updateNgoAfterMealLink() {
+  if (!ngoAfterMealLink || !forecastDate) return;
+  const ngoUrl = new URL('/admin/ngo', window.location.origin);
+  if (forecastDate.value) ngoUrl.searchParams.set('meal_date', forecastDate.value);
+  const selectedMeal = document.querySelector('#meal').value;
+  if (selectedMeal) ngoUrl.searchParams.set('meal', selectedMeal);
+  ngoAfterMealLink.href = `${ngoUrl.pathname}${ngoUrl.search}`;
+}
+if (ngoAfterMealLink && forecastDate) {
+  updateNgoAfterMealLink();
+  forecastDate.addEventListener('change', updateNgoAfterMealLink);
+  document.querySelector('#meal').addEventListener('change', updateNgoAfterMealLink);
+  ngoAfterMealLink.addEventListener('click', updateNgoAfterMealLink);
+}
 document.querySelector('#today').textContent = new Intl.DateTimeFormat('en', {
   weekday: 'short', month: 'short', day: 'numeric'
 }).format(date);

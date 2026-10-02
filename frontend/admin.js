@@ -8,6 +8,13 @@ const formTitle = document.querySelector('#records-title');
 const submitButton = document.querySelector('#record-submit');
 const cancelButton = document.querySelector('#cancel-edit');
 const exampleButton = document.querySelector('#fill-example');
+const csvImportForm = document.querySelector('#csv-import-form');
+const csvFileInput = document.querySelector('#csv-file');
+const csvConfirm = document.querySelector('#csv-confirm-real');
+const csvImportButton = document.querySelector('#csv-import-button');
+const csvImportMessage = document.querySelector('#csv-import-message');
+let previewedCsvFile = null;
+let previewedCsv = null;
 
 let editingRecordId = null;
 let savedRecords = [];
@@ -116,6 +123,115 @@ function resetRecordForm() {
   cancelButton.hidden = true;
   exampleButton.hidden = false;
 }
+
+function resetCsvPreview() {
+  previewedCsvFile = null;
+  previewedCsv = null;
+  csvConfirm.checked = false;
+  csvImportButton.disabled = true;
+  document.querySelector('#csv-preview-panel').hidden = true;
+  csvImportMessage.textContent = '';
+  csvImportMessage.style.color = '';
+}
+
+function renderCsvPreview(preview) {
+  const previewRows = document.querySelector('#csv-preview-rows');
+  previewRows.replaceChildren();
+  document.querySelector('#csv-preview-summary').textContent =
+    `${preview.row_count.toLocaleString()} rows passed validation. The preview below shows up to the first 10; all rows will be imported together.`;
+  for (const record of preview.preview) {
+    const row = document.createElement('tr');
+    const values = [
+      record.meal_date,
+      `${record.meal} — ${record.menu}`,
+      `${record.meals_served.toLocaleString()} / ${record.students.toLocaleString()}`,
+      record.prepared_portions == null ? '—' : record.prepared_portions.toLocaleString(),
+      record.food_waste_kg == null ? '—' : Number(record.food_waste_kg).toLocaleString(undefined, { maximumFractionDigits: 1 })
+    ];
+    for (const value of values) {
+      const cell = document.createElement('td');
+      cell.textContent = value;
+      row.append(cell);
+    }
+    previewRows.append(row);
+  }
+  document.querySelector('#csv-preview-panel').hidden = false;
+}
+
+function apiErrorMessage(body, fallback) {
+  if (Array.isArray(body.detail?.errors)) {
+    return `${body.detail.message || fallback} ${body.detail.errors.join(' ')}`;
+  }
+  return typeof body.detail === 'string' ? body.detail : fallback;
+}
+
+csvFileInput.addEventListener('change', resetCsvPreview);
+csvConfirm.addEventListener('change', () => {
+  csvImportButton.disabled = !csvConfirm.checked || previewedCsvFile !== csvFileInput.files[0];
+});
+
+csvImportForm.addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const file = csvFileInput.files[0];
+  if (!file) return;
+  resetCsvPreview();
+  const previewButton = document.querySelector('#csv-preview-button');
+  previewButton.disabled = true;
+  previewButton.textContent = 'Checking…';
+  csvImportMessage.textContent = 'Checking the file. Nothing will be saved yet.';
+  try {
+    const response = await fetch('/records/import/preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'text/csv; charset=utf-8' },
+      body: file
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(apiErrorMessage(result, 'CSV preview failed.'));
+    previewedCsvFile = file;
+    previewedCsv = result;
+    renderCsvPreview(result);
+    csvImportMessage.textContent = 'Preview passed. Confirm the file contents below to import.';
+  } catch (error) {
+    csvImportMessage.textContent = error.message;
+    csvImportMessage.style.color = '#a34a3a';
+  } finally {
+    previewButton.disabled = false;
+    previewButton.textContent = 'Preview CSV';
+  }
+});
+
+csvImportButton.addEventListener('click', async () => {
+  const file = csvFileInput.files[0];
+  if (!file || file !== previewedCsvFile || !previewedCsv || !csvConfirm.checked) return;
+  csvImportButton.disabled = true;
+  csvImportButton.textContent = 'Importing…';
+  csvImportMessage.textContent = 'Saving the validated rows together…';
+  csvImportMessage.style.color = '';
+  try {
+    const response = await fetch('/records/import', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'text/csv; charset=utf-8',
+        'X-MessMind-Confirm-Real-Data': 'yes'
+      },
+      body: file
+    });
+    const result = await response.json();
+    if (!response.ok) throw new Error(apiErrorMessage(result, 'CSV import failed.'));
+    csvFileInput.value = '';
+    resetCsvPreview();
+    csvImportMessage.textContent = `Imported ${result.imported_rows.toLocaleString()} real meal records. The uploaded file was not stored.`;
+    csvImportMessage.style.color = '';
+    await loadRecords();
+    await loadReadiness();
+  } catch (error) {
+    csvImportMessage.textContent = error.message;
+    csvImportMessage.style.color = '#a34a3a';
+  } finally {
+    csvImportButton.textContent = 'Import all real records';
+    csvImportButton.disabled = !csvConfirm.checked || previewedCsvFile !== csvFileInput.files[0];
+  }
+});
 
 function startEditing(record) {
   editingRecordId = record.id;

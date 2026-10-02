@@ -279,6 +279,80 @@ footer { color: var(--muted); text-align: center; font-size: 11px; padding-top: 
 .portal-card-copy strong { font: 700 15px Manrope, sans-serif; }
 .portal-card-copy small { color: var(--body-copy); font-size: 11px; line-height: 1.45; }
 .portal-card-arrow { margin: 0; color: var(--green); text-align: right; font-size: 21px; }
+
+.admin-top-actions { display: flex; align-items: center; gap: 12px; }
+.ngo-shell { width: min(100% - 40px, 900px); }
+.ngo-top-link { display: inline-flex; align-items: center; text-decoration: none; }
+.ngo-notice { display: grid; grid-template-columns: 28px 1fr; gap: 11px; margin: 8px 0 16px; padding: 14px 16px; border: 1px solid color-mix(in srgb, #bb9551 32%, var(--line)); border-radius: 12px; background: color-mix(in srgb, #fbf4e4 66%, var(--paper)); }
+.ngo-notice-mark { display: grid; width: 24px; height: 24px; place-items: center; border-radius: 50%; color: #705319; background: #f4e8c7; font: 700 14px Manrope, sans-serif; }
+.ngo-notice strong { color: var(--ink); font-size: 12px; }
+.ngo-notice p { margin: 4px 0 0; color: var(--body-copy); font-size: 11px; line-height: 1.55; }
+.ngo-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin: 0 0 15px; }
+.ngo-summary-grid article { display: grid; gap: 5px; min-width: 0; padding: 13px 15px; border: 1px solid var(--line); border-radius: 12px; background: color-mix(in srgb, var(--paper) 84%, transparent); }
+.ngo-summary-grid article > span { color: var(--muted); font-size: 10px; }
+.ngo-summary-grid strong { color: var(--green); font: 700 22px Manrope, sans-serif; }
+.ngo-panel { margin-top: 15px; }
+.ngo-panel .planner-heading { align-items: center; gap: 12px; }
+.ngo-panel .section-intro { margin-top: -9px; }
+.ngo-handoff-note { display: grid; justify-items: start; gap: 8px; margin-top: 12px; padding: 12px; border: 1px solid color-mix(in srgb, var(--green) 22%, var(--line)); border-radius: 10px; background: color-mix(in srgb, var(--soft-green) 72%, transparent); }
+.ngo-handoff-note p { margin: 0; color: var(--body-copy); font-size: 11px; line-height: 1.55; }
+.ngo-handoff-link { display: inline-flex; align-items: center; text-decoration: none; }
+.ngo-handoff-link span { font-size: 14px; }
+.ngo-counter { color: var(--green); background: var(--soft-green); padding: 7px 10px; border-radius: 99px; font-size: 10px; font-weight: 700; white-space: nowrap; }
+.ngo-form { margin-top: 17px; }
+.ngo-contact-privacy { margin: 0; color: var(--muted); font-size: 10px; line-height: 1.5; }
+.ngo-form button[type="submit"] { justify-self: start; min-width: min(100%, 260px); padding: 0 16px; }
+.ngo-form button:disabled { cursor: not-allowed; }
+.ngo-confirm { display: flex; align-items: flex-start; gap: 9px; margin: 9px 0 2px; padding: 11px 12px; border: 1px solid var(--line); border-radius: 9px; color: var(--body-copy); background: color-mix(in srgb, var(--soft-green) 65%, transparent); line-height: 1.45; }
+.ngo-confirm input { width: 16px; min-width: 16px; min-height: 16px; margin: 1px 0 0; padding: 0; accent-color: var(--green); }
+.ngo-list { display: grid; gap: 10px; margin-top: 15px; }
+.ngo-entry { min-width: 0; padding: 14px; border: 1px solid var(--line); border-radius: 11px; background: color-mix(in srgb, var(--paper) 83%, transparent); }
+.ngo-entry-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.ngo-entry-heading h3 { margin: 0; color: var(--ink); font: 700 14px Manrope, sans-serif; }
+.ngo-entry > p { margin: 7px 0 0; color: var(--body-copy); font-size: 11px; line-height: 1.55; overflow-wrap: anywhere; }
+.ngo-status { flex: 0 0 auto; padding: 5px 8px; border-radius: 99px; color: #76551b; background: #fbf4e4; font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+.ngo-status.status-active, .ngo-status.status-distributed { color: #236b50; background: #eff6f1; }
+.ngo-status.status-paused, .ngo-status.status-cancelled, .ngo-status.status-declined, .ngo-status.status-expired { color: #8d5149; background: #fbefed; }
+.ngo-status.status-accepted, .ngo-status.status-collected { color: #315f91; background: #edf3fa; }
+.ngo-entry-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 12px; }
+.ngo-entry-actions > button { min-height: 32px; }
+.ngo-details-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 12px; }
+.ngo-detail { display: grid; gap: 3px; min-width: 0; padding: 8px 9px; border: 1px solid var(--line); border-radius: 8px; background: color-mix(in srgb, var(--canvas) 65%, transparent); }
+.ngo-detail span { color: var(--muted); font-size: 9px; }
+.ngo-detail strong { color: var(--ink); font-size: 10px; font-weight: 600; line-height: 1.4; overflow-wrap: anywhere; }
+.ngo-event-history { margin-top: 11px; color: var(--body-copy); font-size: 10px; }
+.ngo-event-history summary { cursor: pointer; color: var(--green); font-weight: 700; }
+.ngo-event-history ul { display: grid; gap: 5px; padding-left: 18px; line-height: 1.5; }
+.ngo-transition-form { display: grid; grid-template-columns: minmax(90px, 1fr) minmax(100px, 1fr) auto; align-items: end; gap: 8px; margin: 0; }
+.ngo-transition-form label { display: grid; gap: 5px; margin: 0; color: var(--muted); font-size: 9px; }
+.ngo-transition-form .ngo-confirm { grid-column: 1 / -1; }
+.ngo-transition-form input { min-height: 34px; font-size: 11px; }
+.ngo-transition-form button { min-height: 34px; padding: 0 10px; }
+.ngo-history-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 27px; }
+.ngo-history-heading h3 { margin: 0; color: var(--ink); font: 700 15px Manrope, sans-serif; }
+.ngo-footer { display: grid; justify-items: center; gap: 8px; line-height: 1.5; }
+.ngo-footer a { color: var(--green); }
+.ngo-footer span { max-width: 560px; }
+:root[data-theme="dark"] .ngo-notice { background: color-mix(in srgb, #4a3b1c 35%, var(--paper)); border-color: #776033; }
+:root[data-theme="dark"] .ngo-notice-mark { color: #f2daa1; background: #51431f; }
+:root[data-theme="dark"] .ngo-status.status-active, :root[data-theme="dark"] .ngo-status.status-distributed { color: #a9dfbf; background: #1c3d2f; }
+:root[data-theme="dark"] .ngo-status.status-paused, :root[data-theme="dark"] .ngo-status.status-cancelled, :root[data-theme="dark"] .ngo-status.status-declined, :root[data-theme="dark"] .ngo-status.status-expired { color: #e5aaa1; background: #442c29; }
+:root[data-theme="dark"] .ngo-status.status-accepted, :root[data-theme="dark"] .ngo-status.status-collected { color: #b5d1f1; background: #26384c; }
+@media (max-width: 600px) {
+  .ngo-shell { width: min(100% - 28px, 900px); }
+  .admin-top-actions { gap: 8px; }
+  .admin-top-actions .today { display: none; }
+  .ngo-entry-heading { flex-direction: column; }
+  .ngo-details-grid { grid-template-columns: 1fr; }
+  .ngo-transition-form { grid-template-columns: 1fr 1fr; }
+  .ngo-transition-form button { grid-column: 1 / -1; }
+  .ngo-panel .planner-heading { align-items: flex-start; }
+  .ngo-panel .planner-heading .ngo-counter { font-size: 9px; }
+  .ngo-summary-grid { gap: 7px; }
+  .ngo-summary-grid article { padding: 11px 9px; }
+  .ngo-summary-grid article > span { font-size: 9px; }
+  .ngo-summary-grid strong { font-size: 18px; }
+}
 .portal-privacy-note { margin: 15px 3px 0; color: var(--note-copy); font-size: 10px; line-height: 1.55; }
 .portal-back { position: relative; top: 22px; min-height: 30px; margin: 8px 0 0; padding: 0 9px; font-size: 10px; line-height: 1.2; }
 .portal-welcome { padding-top: 38px; }
