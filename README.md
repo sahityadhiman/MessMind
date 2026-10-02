@@ -14,6 +14,8 @@ MessMind is a meal-planning prototype for hostel mess kitchens. Staff can record
 - Explore a weekday, meal, and menu from the supplied menu plan, including suggested portions and illustrative waste.
 - View a simulated seven-day report.
 - Use the staff page to add and correct aggregate meal records, check data readiness, and export non-demo records as CSV.
+- Use the staff-only **NGO Connect** area to register a college-approved partner and record safe surplus offers, pickups, and distribution totals.
+- Import approved historical meal totals from the staff CSV template after previewing every row.
 - Create a student account with an email address and password to use Demo Simulation. Email addresses are not checked against a college.
 - Switch between light and dark themes. The home page also includes the interactive sketchbook background.
 
@@ -84,7 +86,21 @@ Each record contains an aggregate meal date, meal, menu, number of eligible stud
 - The app prevents duplicate records for the same date, meal, and record type.
 - Staff can edit saved records. The delete endpoint only removes demo records; real records are not deleted through that endpoint.
 - **Download real CSV** exports aggregate non-demo records only. Store exported files carefully and share them only with approved people.
+- **Import approved records** is available on the same staff page. Download the blank UTF-8 CSV template, fill the required columns (`meal_date`, `meal`, `menu`, `students`, `meals_served`), and optionally add `prepared_portions` and measured `food_waste_kg`. Dates must be `YYYY-MM-DD`; meal names are Breakfast, Lunch, Snacks, or Dinner. Blank optional cells remain unknown. Preview catches invalid values, personal-data columns, and duplicate date-and-meal rows; a separate confirmation imports the complete file atomically as real records. The CSV is not retained. Keep an original backup and import only approved aggregate records.
 - Use HTTPS whenever staff pages are reachable over a network. Basic authentication credentials are not protected when sent over plain HTTP.
+
+### NGO Connect and surplus rescue
+
+Open `/admin/ngo` with the same staff sign-in as Manager Data Entry. This workflow is separate from Student Demo Simulation. Real Estimation helps the mess plan before cooking; staff records a donation offer only after checking that the food is safe, untouched, and has not been served. Recorded food waste and predicted surplus are never automatically treated as donation stock.
+
+- Real Estimation has an **Open NGO Connect** handoff that carries only the selected meal and date to the offer form. It does not carry the prediction, attendance, waste estimate, or create an offer; staff must measure and confirm actual safe surplus after the meal.
+- NGO partner entries begin as **pending approval**. Activate one only after the college confirms the partnership, contact, collection coverage, and safe-handling plan.
+- An offer records the donor kitchen, pickup location, meal, food type, amount, preparation time, safe-consumption deadline, measured storage and pickup temperatures, allergen/handling notes, and distribution record.
+- The app tracks the manual workflow: pending contact → accepted → collected → distributed (or declined/cancelled). It keeps a staff-attributed event history and checks that recorded pickup/distribution quantities do not exceed the amount offered/collected.
+- **No automatic NGO contact is implemented yet.** Staff must contact the organization outside MessMind and update the status after confirmation. The NGO has no login or self-service portal yet.
+- Only enter contact details with the organization’s permission. The app does not decide whether food is safe; staff and the college must follow applicable food-safety rules and approved procedures. See the [FSSAI surplus-food regulations](https://www.fssai.gov.in/upload/uploadfiles/files/Gazette_Notification_Surplus_Food_06_08_2019.pdf).
+
+This is an operational tracking foundation, not a completed college-approved donation service. Real pickup requires an approved NGO partner, a reliable contact channel, and an agreed safe-handling process.
 
 ### Storage and production safety
 
@@ -137,6 +153,7 @@ The local `.env` file is ignored by Git. Never replace it with a real credential
 | --- | --- |
 | `http://127.0.0.1:8000/` | Student-facing planner and demo |
 | `http://127.0.0.1:8000/admin` | Staff records (browser sign-in required) |
+| `http://127.0.0.1:8000/admin/ngo` | NGO partner and surplus handover workflow (staff sign-in required) |
 | `http://127.0.0.1:8000/docs` | Interactive FastAPI documentation |
 | `http://127.0.0.1:8000/health` | API health check |
 
@@ -163,6 +180,15 @@ Interactive request/response schemas are available at `/docs`.
 | `PUT` | `/records/{id}` | Staff | Correct a record without changing its type |
 | `DELETE` | `/records/{id}` | Staff | Delete a demo record only |
 | `GET` | `/records/export.csv` | Staff | Download non-demo aggregate records as CSV |
+| `GET` | `/records/import-template.csv` | Staff | Download the blank real-record CSV template |
+| `POST` | `/records/import/preview` | Staff | Validate a CSV without saving it |
+| `POST` | `/records/import` | Staff | Atomically import confirmed aggregate real records |
+| `GET` | `/ngo/partners` | Staff | List NGO partners |
+| `POST` | `/ngo/partners` | Staff | Add a partner in pending-approval status |
+| `PATCH` | `/ngo/partners/{id}/status` | Staff | Activate a college-approved partner or pause it |
+| `GET` | `/ngo/offers` | Staff | List food-rescue offers and handover events |
+| `POST` | `/ngo/offers` | Staff | Record safe, untouched surplus and a manual contact task |
+| `PATCH` | `/ngo/offers/{id}/status` | Staff | Record acceptance, pickup, decline, cancellation, or distribution |
 
 Staff routes use the configured HTTP Basic credentials. The browser may show a username/password prompt when opening `/admin` or a staff-only route.
 
@@ -204,6 +230,8 @@ MessMind/
 │   ├── demo.js                 # Demo simulation and weekly report UI
 │   ├── admin.html              # Staff record interface
 │   ├── admin.js                # Record management and readiness display
+│   ├── ngo.html                # Staff NGO partner and surplus workflow
+│   ├── ngo.js                  # Partner setup and handover tracking
 │   ├── styles.css              # Responsive light/dark interface
 │   ├── effects/sketchbook/     # Sketchbook renderer and host styles
 │   └── sketchbook/             # Local artwork and font assets
@@ -224,6 +252,7 @@ MessMind/
 - Synthetic holdout metrics test the demo model against its own generated rules; they do not establish real-world accuracy.
 - Real estimates become useful only after enough approved, consistently entered records exist. Waste estimates additionally require actual waste measurements.
 - The real model uses simple menu and weekday features and falls back to a same-meal average when the more complex model does not validate better. Compare estimates with observed kitchen results before relying on them for preparation decisions.
+- NGO Connect does not yet send messages, authenticate NGO users, or arrange transport. The college must approve the partner and food-handling procedure before using it for real donations.
 - The app does not collect student names, IDs, or room numbers. Student account emails are stored for sign-in, while meal plans are stored under a date-specific participant hash and exposed to predictions as combined totals.
 
 ## Author
