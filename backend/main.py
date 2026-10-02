@@ -11,6 +11,7 @@ import secrets
 import sys
 import time
 from datetime import date, datetime, timedelta, timezone
+from typing import Literal
 from urllib.parse import urlsplit
 from uuid import uuid4
 
@@ -171,6 +172,85 @@ class StudentWebSession(Base):
     expires_at: Mapped[int] = mapped_column(Integer, nullable=False, index=True)
 
 
+class NgoPartner(Base):
+    __tablename__ = "ngo_partners"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    organization_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    service_area: Mapped[str] = mapped_column(String(160), nullable=False)
+    contact_person: Mapped[str | None] = mapped_column(String(120), nullable=True)
+    contact_phone: Mapped[str | None] = mapped_column(String(40), nullable=True)
+    contact_email: Mapped[str | None] = mapped_column(String(254), nullable=True)
+    accepted_food_notes: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(24), nullable=False, default="pending_approval", server_default="pending_approval"
+    )
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    approved_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    approved_by: Mapped[str | None] = mapped_column(String(80), nullable=True)
+
+
+class SurplusOffer(Base):
+    __tablename__ = "surplus_offers"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    partner_id: Mapped[int] = mapped_column(
+        ForeignKey("ngo_partners.id", ondelete="RESTRICT"), nullable=False, index=True
+    )
+    donor_name: Mapped[str] = mapped_column(String(160), nullable=False)
+    pickup_location: Mapped[str] = mapped_column(String(240), nullable=False)
+    batch_reference: Mapped[str | None] = mapped_column(String(80), nullable=True)
+    meal_date: Mapped[date] = mapped_column(Date, nullable=False)
+    meal: Mapped[str] = mapped_column(String(30), nullable=False)
+    food_description: Mapped[str] = mapped_column(String(200), nullable=False)
+    food_category: Mapped[str] = mapped_column(String(24), nullable=False)
+    offered_quantity_kg: Mapped[float] = mapped_column(Float, nullable=False)
+    prepared_at: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    consume_by: Mapped[datetime] = mapped_column(DateTime(timezone=True), nullable=False)
+    storage_temperature_c: Mapped[float] = mapped_column(Float, nullable=False)
+    allergen_notes: Mapped[str | None] = mapped_column(String(300), nullable=True)
+    handling_notes: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    status: Mapped[str] = mapped_column(
+        String(24), nullable=False, default="pending_contact", server_default="pending_contact"
+    )
+    collected_quantity_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    pickup_temperature_c: Mapped[float | None] = mapped_column(Float, nullable=True)
+    distributed_quantity_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    distribution_area: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    updated_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+    accepted_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    collected_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+    distributed_at: Mapped[datetime | None] = mapped_column(DateTime(timezone=True), nullable=True)
+
+
+class SurplusOfferEvent(Base):
+    __tablename__ = "surplus_offer_events"
+
+    id: Mapped[int] = mapped_column(Integer, primary_key=True, autoincrement=True)
+    offer_id: Mapped[int] = mapped_column(
+        ForeignKey("surplus_offers.id", ondelete="CASCADE"), nullable=False, index=True
+    )
+    status: Mapped[str] = mapped_column(String(24), nullable=False)
+    note: Mapped[str | None] = mapped_column(String(500), nullable=True)
+    quantity_kg: Mapped[float | None] = mapped_column(Float, nullable=True)
+    temperature_c: Mapped[float | None] = mapped_column(Float, nullable=True)
+    distribution_area: Mapped[str | None] = mapped_column(String(200), nullable=True)
+    recorded_by: Mapped[str] = mapped_column(String(80), nullable=False)
+    created_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True), nullable=False, default=lambda: datetime.now(timezone.utc)
+    )
+
+
 def require_staff(credentials: HTTPBasicCredentials = Depends(staff_auth)):
     expected_username = os.getenv("MESSMIND_ADMIN_USERNAME", "mess-manager")
     expected_password = os.getenv("MESSMIND_ADMIN_PASSWORD", "")
@@ -262,6 +342,17 @@ def ensure_student_account_storage():
         raise HTTPException(
             status_code=503,
             detail="Student accounts need persistent PostgreSQL storage. Configure DATABASE_URL before enabling sign-up.",
+        )
+
+
+def ensure_ngo_storage():
+    if IS_VERCEL_DEPLOYMENT and (not DATABASE_URL or not ALLOW_REAL_RECORDS):
+        raise HTTPException(
+            status_code=503,
+            detail=(
+                "NGO Connect requires persistent PostgreSQL storage and approved real-data "
+                "collection. Configure these only after the college approves a partner and workflow."
+            ),
         )
 
 
@@ -403,6 +494,61 @@ class MealRecordUpdate(MealRecordFields):
 
 class MealRecordResponse(MealRecordRequest):
     id: int
+
+
+class NgoPartnerCreate(BaseModel):
+    organization_name: str = Field(min_length=2, max_length=160)
+    service_area: str = Field(min_length=2, max_length=160)
+    contact_person: str | None = Field(default=None, max_length=120)
+    contact_phone: str | None = Field(default=None, max_length=40)
+    contact_email: str | None = Field(default=None, max_length=254)
+    accepted_food_notes: str | None = Field(default=None, max_length=300)
+
+
+class NgoPartnerStatusUpdate(BaseModel):
+    status: Literal["active", "paused"]
+
+
+class SurplusOfferCreate(BaseModel):
+    partner_id: int = Field(gt=0)
+    donor_name: str = Field(min_length=2, max_length=160)
+    pickup_location: str = Field(min_length=3, max_length=240)
+    batch_reference: str | None = Field(default=None, max_length=80)
+    meal_date: date
+    meal: Literal["Breakfast", "Lunch", "Snacks", "Dinner"]
+    food_description: str = Field(min_length=2, max_length=200)
+    food_category: Literal["vegetarian", "non_vegetarian", "mixed"]
+    offered_quantity_kg: float = Field(gt=0, le=10_000)
+    prepared_at: datetime
+    consume_by: datetime
+    storage_temperature_c: float = Field(ge=-50, le=100)
+    allergen_notes: str | None = Field(default=None, max_length=300)
+    handling_notes: str | None = Field(default=None, max_length=500)
+    safe_unserved_confirmed: bool
+
+
+class SurplusOfferStatusUpdate(BaseModel):
+    status: Literal["accepted", "declined", "collected", "distributed", "cancelled"]
+    note: str | None = Field(default=None, max_length=500)
+    collected_quantity_kg: float | None = Field(default=None, gt=0, le=10_000)
+    pickup_temperature_c: float | None = Field(default=None, ge=-50, le=100)
+    pickup_safe_confirmed: bool = False
+    distributed_quantity_kg: float | None = Field(default=None, gt=0, le=10_000)
+    distribution_area: str | None = Field(default=None, max_length=200)
+
+
+def normalize_utc(value: datetime) -> datetime:
+    """Store browser-supplied timestamps consistently as naive UTC for SQLite/Postgres."""
+    if value.tzinfo is None:
+        return value.replace(tzinfo=timezone.utc).replace(tzinfo=None)
+    return value.astimezone(timezone.utc).replace(tzinfo=None)
+
+
+def iso_utc(value: datetime | None) -> str | None:
+    if value is None:
+        return None
+    normalized = normalize_utc(value)
+    return normalized.replace(tzinfo=timezone.utc).isoformat().replace("+00:00", "Z")
 
 
 @app.get("/health")
@@ -871,6 +1017,355 @@ def staff_admin_page(_staff: str = Depends(require_staff)):
     return FileResponse(FRONTEND_DIR / "admin.html")
 
 
+@app.get("/admin/ngo", include_in_schema=False)
+def staff_ngo_page(_staff: str = Depends(require_staff)):
+    return FileResponse(FRONTEND_DIR / "ngo.html")
+
+
+def partner_payload(partner: NgoPartner) -> dict:
+    return {
+        "id": partner.id,
+        "organization_name": partner.organization_name,
+        "service_area": partner.service_area,
+        "contact_person": partner.contact_person,
+        "contact_phone": partner.contact_phone,
+        "contact_email": partner.contact_email,
+        "accepted_food_notes": partner.accepted_food_notes,
+        "status": partner.status,
+        "created_at": iso_utc(partner.created_at),
+        "updated_at": iso_utc(partner.updated_at),
+        "approved_at": iso_utc(partner.approved_at),
+        "approved_by": partner.approved_by,
+    }
+
+
+def offer_payload(offer: SurplusOffer, partner: NgoPartner, events: list[SurplusOfferEvent]) -> dict:
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    is_expired = (
+        offer.status in {"pending_contact", "accepted"}
+        and normalize_utc(offer.consume_by) <= now
+    )
+    return {
+        "id": offer.id,
+        "partner_id": offer.partner_id,
+        "partner_name": partner.organization_name,
+        "donor_name": offer.donor_name,
+        "pickup_location": offer.pickup_location,
+        "batch_reference": offer.batch_reference,
+        "meal_date": offer.meal_date.isoformat(),
+        "meal": offer.meal,
+        "food_description": offer.food_description,
+        "food_category": offer.food_category,
+        "offered_quantity_kg": offer.offered_quantity_kg,
+        "prepared_at": iso_utc(offer.prepared_at),
+        "consume_by": iso_utc(offer.consume_by),
+        "storage_temperature_c": offer.storage_temperature_c,
+        "allergen_notes": offer.allergen_notes,
+        "handling_notes": offer.handling_notes,
+        "status": "expired" if is_expired else offer.status,
+        "is_expired": is_expired,
+        "collected_quantity_kg": offer.collected_quantity_kg,
+        "pickup_temperature_c": offer.pickup_temperature_c,
+        "distributed_quantity_kg": offer.distributed_quantity_kg,
+        "distribution_area": offer.distribution_area,
+        "created_at": iso_utc(offer.created_at),
+        "updated_at": iso_utc(offer.updated_at),
+        "accepted_at": iso_utc(offer.accepted_at),
+        "collected_at": iso_utc(offer.collected_at),
+        "distributed_at": iso_utc(offer.distributed_at),
+        "events": [
+            {
+                "status": event.status,
+                "note": event.note,
+                "quantity_kg": event.quantity_kg,
+                "temperature_c": event.temperature_c,
+                "distribution_area": event.distribution_area,
+                "recorded_by": event.recorded_by,
+                "created_at": iso_utc(event.created_at),
+            }
+            for event in events
+        ],
+    }
+
+
+@app.get("/ngo/partners")
+def list_ngo_partners(_staff: str = Depends(require_staff)):
+    ensure_ngo_storage()
+    with Session(engine) as session:
+        partners = session.scalars(
+            select(NgoPartner).order_by(NgoPartner.organization_name, NgoPartner.id)
+        ).all()
+    return [partner_payload(partner) for partner in partners]
+
+
+@app.post("/ngo/partners", status_code=201)
+def create_ngo_partner(
+    partner: NgoPartnerCreate,
+    _staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    ensure_ngo_storage()
+    phone = (partner.contact_phone or "").strip()
+    email = (partner.contact_email or "").strip().lower()
+    if not phone and not email:
+        raise HTTPException(
+            status_code=422, detail="Enter an NGO contact phone number or email address."
+        )
+    if phone and len(re.sub(r"\D", "", phone)) < 7:
+        raise HTTPException(status_code=422, detail="Enter a valid NGO contact phone number.")
+    if email and not re.fullmatch(r"[^\s@]+@[^\s@]+\.[^\s@]+", email):
+        raise HTTPException(status_code=422, detail="Enter a valid NGO contact email address.")
+
+    saved_partner = NgoPartner(
+        organization_name=partner.organization_name.strip(),
+        service_area=partner.service_area.strip(),
+        contact_person=(partner.contact_person or "").strip() or None,
+        contact_phone=phone or None,
+        contact_email=email or None,
+        accepted_food_notes=(partner.accepted_food_notes or "").strip() or None,
+        status="pending_approval",
+        created_at=datetime.now(timezone.utc),
+        updated_at=datetime.now(timezone.utc),
+    )
+    with Session(engine) as session:
+        session.add(saved_partner)
+        session.commit()
+        session.refresh(saved_partner)
+        payload = partner_payload(saved_partner)
+    return payload
+
+
+@app.patch("/ngo/partners/{partner_id}/status")
+def update_ngo_partner_status(
+    partner_id: int,
+    update: NgoPartnerStatusUpdate,
+    staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    ensure_ngo_storage()
+    with Session(engine) as session:
+        partner = session.get(NgoPartner, partner_id)
+        if partner is None:
+            raise HTTPException(status_code=404, detail="NGO partner not found.")
+        if update.status == "active" and not partner.approved_at:
+            partner.approved_at = datetime.now(timezone.utc)
+            partner.approved_by = staff
+        partner.status = update.status
+        partner.updated_at = datetime.now(timezone.utc)
+        session.commit()
+        session.refresh(partner)
+        return partner_payload(partner)
+
+
+@app.get("/ngo/offers")
+def list_surplus_offers(_staff: str = Depends(require_staff)):
+    ensure_ngo_storage()
+    with Session(engine) as session:
+        offers = session.scalars(
+            select(SurplusOffer).order_by(SurplusOffer.created_at.desc(), SurplusOffer.id.desc())
+        ).all()
+        partner_ids = {offer.partner_id for offer in offers}
+        partners = {
+            partner.id: partner
+            for partner in session.scalars(
+                select(NgoPartner).where(NgoPartner.id.in_(partner_ids))
+            ).all()
+        } if partner_ids else {}
+        events = session.scalars(
+            select(SurplusOfferEvent).order_by(SurplusOfferEvent.created_at, SurplusOfferEvent.id)
+        ).all()
+        events_by_offer: dict[int, list[SurplusOfferEvent]] = {}
+        for event in events:
+            events_by_offer.setdefault(event.offer_id, []).append(event)
+        return [
+            offer_payload(offer, partners[offer.partner_id], events_by_offer.get(offer.id, []))
+            for offer in offers
+            if offer.partner_id in partners
+        ]
+
+
+@app.post("/ngo/offers", status_code=201)
+def create_surplus_offer(
+    request: SurplusOfferCreate,
+    staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    ensure_ngo_storage()
+    if not request.safe_unserved_confirmed:
+        raise HTTPException(
+            status_code=422,
+            detail="Only safe, untouched food that has not been served can be offered.",
+        )
+    prepared_at = normalize_utc(request.prepared_at)
+    consume_by = normalize_utc(request.consume_by)
+    now = datetime.now(timezone.utc).replace(tzinfo=None)
+    if prepared_at > now:
+        raise HTTPException(status_code=422, detail="Preparation time cannot be in the future.")
+    if consume_by <= now or consume_by <= prepared_at:
+        raise HTTPException(
+            status_code=422,
+            detail="The safe-consumption deadline must be in the future and after preparation.",
+        )
+
+    with Session(engine) as session:
+        partner = session.get(NgoPartner, request.partner_id)
+        if partner is None or partner.status != "active":
+            raise HTTPException(
+                status_code=409,
+                detail="Choose a college-approved active NGO partner before creating an offer.",
+            )
+        now_aware = datetime.now(timezone.utc)
+        offer = SurplusOffer(
+            partner_id=partner.id,
+            donor_name=request.donor_name.strip(),
+            pickup_location=request.pickup_location.strip(),
+            batch_reference=(request.batch_reference or "").strip() or None,
+            meal_date=request.meal_date,
+            meal=request.meal,
+            food_description=request.food_description.strip(),
+            food_category=request.food_category,
+            offered_quantity_kg=request.offered_quantity_kg,
+            prepared_at=prepared_at,
+            consume_by=consume_by,
+            storage_temperature_c=request.storage_temperature_c,
+            allergen_notes=(request.allergen_notes or "").strip() or None,
+            handling_notes=(request.handling_notes or "").strip() or None,
+            status="pending_contact",
+            created_at=now_aware,
+            updated_at=now_aware,
+        )
+        session.add(offer)
+        session.flush()
+        session.add(
+            SurplusOfferEvent(
+                offer_id=offer.id,
+                status="pending_contact",
+                note=(
+                    "Staff confirmed safe, untouched, unserved food. Contact the NGO outside "
+                    "MessMind to confirm availability; no message was sent."
+                ),
+                recorded_by=staff,
+                created_at=now_aware,
+            )
+        )
+        session.commit()
+        session.refresh(offer)
+        events = session.scalars(
+            select(SurplusOfferEvent)
+            .where(SurplusOfferEvent.offer_id == offer.id)
+            .order_by(SurplusOfferEvent.created_at, SurplusOfferEvent.id)
+        ).all()
+        return offer_payload(offer, partner, events)
+
+
+@app.patch("/ngo/offers/{offer_id}/status")
+def update_surplus_offer_status(
+    offer_id: int,
+    update: SurplusOfferStatusUpdate,
+    staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    ensure_ngo_storage()
+    allowed_transitions = {
+        "pending_contact": {"accepted", "declined", "cancelled"},
+        "accepted": {"collected", "cancelled"},
+        "collected": {"distributed"},
+    }
+    with Session(engine) as session:
+        offer = session.get(SurplusOffer, offer_id)
+        if offer is None:
+            raise HTTPException(status_code=404, detail="Surplus offer not found.")
+        current_status = offer.status
+        now = datetime.now(timezone.utc)
+        now_naive = now.replace(tzinfo=None)
+        if update.status not in allowed_transitions.get(current_status, set()):
+            raise HTTPException(
+                status_code=409,
+                detail=f"Cannot move an offer from {current_status.replace('_', ' ')} to {update.status}.",
+            )
+        if update.status in {"accepted", "collected", "distributed"} and normalize_utc(offer.consume_by) <= now_naive:
+            raise HTTPException(
+                status_code=409,
+                detail="The safe-consumption deadline has passed. This offer cannot advance.",
+            )
+
+        event_quantity = None
+        event_temperature = None
+        event_area = None
+        event_note = (update.note or "").strip() or None
+        if update.status == "accepted":
+            offer.accepted_at = now
+        elif update.status == "collected":
+            if update.collected_quantity_kg is None or update.pickup_temperature_c is None:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Record the measured pickup quantity and food temperature.",
+                )
+            if not update.pickup_safe_confirmed:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Confirm that the food still meets the college-approved safe-handling rules at pickup.",
+                )
+            if update.collected_quantity_kg > offer.offered_quantity_kg:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Collected quantity cannot exceed the amount offered.",
+                )
+            offer.collected_quantity_kg = update.collected_quantity_kg
+            offer.pickup_temperature_c = update.pickup_temperature_c
+            offer.collected_at = now
+            event_quantity = update.collected_quantity_kg
+            event_temperature = update.pickup_temperature_c
+            safety_confirmation = (
+                "Staff confirmed the food still met the college-approved safe-handling rules at pickup."
+            )
+            event_note = (
+                f"{event_note[:350]} {safety_confirmation}"
+                if event_note
+                else safety_confirmation
+            )
+        elif update.status == "distributed":
+            if update.distributed_quantity_kg is None or not (update.distribution_area or "").strip():
+                raise HTTPException(
+                    status_code=422,
+                    detail="Record the quantity distributed and the distribution area.",
+                )
+            if offer.collected_quantity_kg is None or update.distributed_quantity_kg > offer.collected_quantity_kg:
+                raise HTTPException(
+                    status_code=422,
+                    detail="Distributed quantity cannot exceed the amount collected.",
+                )
+            offer.distributed_quantity_kg = update.distributed_quantity_kg
+            offer.distribution_area = update.distribution_area.strip()
+            offer.distributed_at = now
+            event_quantity = update.distributed_quantity_kg
+            event_area = offer.distribution_area
+
+        offer.status = update.status
+        offer.updated_at = now
+        session.add(
+            SurplusOfferEvent(
+                offer_id=offer.id,
+                status=update.status,
+                note=event_note,
+                quantity_kg=event_quantity,
+                temperature_c=event_temperature,
+                distribution_area=event_area,
+                recorded_by=staff,
+                created_at=now,
+            )
+        )
+        session.commit()
+        session.refresh(offer)
+        partner = session.get(NgoPartner, offer.partner_id)
+        events = session.scalars(
+            select(SurplusOfferEvent)
+            .where(SurplusOfferEvent.offer_id == offer.id)
+            .order_by(SurplusOfferEvent.created_at, SurplusOfferEvent.id)
+        ).all()
+        return offer_payload(offer, partner, events)
+
+
 @app.post("/predict", response_model=MealPredictionResponse)
 def predict_attendance(request: MealPredictionRequest):
     # Demo records are never part of the real-history prediction path.
@@ -1090,6 +1585,260 @@ def list_meal_records(_staff: str = Depends(require_staff)):
         }
         for record in records
     ]
+
+
+CSV_REQUIRED_COLUMNS = ("meal_date", "meal", "menu", "students", "meals_served")
+CSV_OPTIONAL_COLUMNS = ("prepared_portions", "food_waste_kg")
+CSV_ALLOWED_COLUMNS = set(CSV_REQUIRED_COLUMNS + CSV_OPTIONAL_COLUMNS)
+CSV_IMPORT_MAX_BYTES = 2 * 1024 * 1024
+CSV_IMPORT_MAX_ROWS = 5_000
+CSV_MEALS = {name.casefold(): name for name in ("Breakfast", "Lunch", "Snacks", "Dinner")}
+
+
+def parse_real_records_csv(content: bytes) -> tuple[list[dict], list[str]]:
+    """Validate an aggregate-only CSV and return normalized rows plus readable errors."""
+    if len(content) > CSV_IMPORT_MAX_BYTES:
+        return [], ["The CSV file is too large. The maximum size is 2 MB."]
+    try:
+        decoded = content.decode("utf-8-sig")
+    except UnicodeDecodeError:
+        return [], ["Save the spreadsheet as a UTF-8 CSV file and try again."]
+
+    try:
+        reader = csv.DictReader(io.StringIO(decoded, newline=""))
+        original_headers = reader.fieldnames
+        if not original_headers:
+            return [], ["The CSV is empty or has no header row."]
+        headers = [header.strip() for header in original_headers]
+        if len(headers) != len(set(headers)):
+            return [], ["The CSV has duplicate column names. Keep each header only once."]
+        unknown = [header for header in headers if header not in CSV_ALLOWED_COLUMNS]
+        missing = [header for header in CSV_REQUIRED_COLUMNS if header not in headers]
+        if unknown:
+            return [], [
+                "Remove unsupported columns (personal data is not accepted): "
+                + ", ".join(unknown[:8])
+            ]
+        if missing:
+            return [], ["Missing required columns: " + ", ".join(missing) + "."]
+
+        reader.fieldnames = headers
+        rows: list[dict] = []
+        errors: list[str] = []
+        seen_slots: set[tuple[date, str]] = set()
+        for row_number, row in enumerate(reader, start=2):
+            if row_number > CSV_IMPORT_MAX_ROWS + 1:
+                errors.append(f"The CSV exceeds the {CSV_IMPORT_MAX_ROWS:,}-row limit.")
+                break
+            if None in row:
+                errors.append(f"Row {row_number}: too many values for the listed columns.")
+                if len(errors) >= 20:
+                    break
+                continue
+            values = {key: (value or "").strip() for key, value in row.items()}
+            if not any(values.values()):
+                continue
+            try:
+                raw_date = values.get("meal_date", "")
+                meal_date = date.fromisoformat(raw_date)
+                if meal_date.isoformat() != raw_date:
+                    raise ValueError
+                raw_meal = values.get("meal", "")
+                meal = CSV_MEALS.get(raw_meal.casefold())
+                if meal is None:
+                    raise ValueError("meal must be Breakfast, Lunch, Snacks, or Dinner")
+                menu = values.get("menu", "")
+                if not menu or len(menu) > 200:
+                    raise ValueError("menu must contain 1–200 characters")
+
+                def required_int(column: str, minimum: int, maximum: int) -> int:
+                    value = values.get(column, "")
+                    if not re.fullmatch(r"\d+", value):
+                        raise ValueError(f"{column} must be a whole number")
+                    parsed = int(value)
+                    if not minimum <= parsed <= maximum:
+                        raise ValueError(f"{column} must be between {minimum} and {maximum}")
+                    return parsed
+
+                students = required_int("students", 1, 100_000)
+                meals_served = required_int("meals_served", 0, 100_000)
+                if meals_served > students:
+                    raise ValueError("meals_served cannot exceed students")
+
+                prepared_raw = values.get("prepared_portions", "")
+                prepared = None
+                if prepared_raw:
+                    if not re.fullmatch(r"\d+", prepared_raw):
+                        raise ValueError("prepared_portions must be a whole number or blank")
+                    prepared = int(prepared_raw)
+                    if prepared > 100_000 or prepared < meals_served:
+                        raise ValueError("prepared_portions must be at least meals_served and no more than 100000")
+
+                waste_raw = values.get("food_waste_kg", "")
+                waste = None
+                if waste_raw:
+                    try:
+                        waste = float(waste_raw)
+                    except ValueError as error:
+                        raise ValueError("food_waste_kg must be a number or blank") from error
+                    if not math.isfinite(waste) or not 0 <= waste <= 100_000:
+                        raise ValueError("food_waste_kg must be between 0 and 100000 kg")
+
+                slot = (meal_date, meal.casefold())
+                if slot in seen_slots:
+                    raise ValueError("this file contains the same date and meal more than once")
+                seen_slots.add(slot)
+                rows.append(
+                    {
+                        "meal_date": meal_date,
+                        "meal": meal,
+                        "menu": menu,
+                        "students": students,
+                        "meals_served": meals_served,
+                        "prepared_portions": prepared,
+                        "food_waste_kg": waste,
+                        "is_demo": False,
+                    }
+                )
+            except (ValueError, OverflowError) as error:
+                errors.append(f"Row {row_number}: {error or 'meal_date must use YYYY-MM-DD'}.")
+                if len(errors) >= 20:
+                    break
+
+        if not rows and not errors:
+            errors.append("The CSV contains a header but no meal rows.")
+        return rows, errors
+    except csv.Error:
+        return [], ["The CSV could not be parsed. Check its quotes, commas, and line breaks."]
+
+
+def check_real_record_csv_duplicates(rows: list[dict]) -> list[str]:
+    if not rows:
+        return []
+    dates = {row["meal_date"] for row in rows}
+    meals = {row["meal"].casefold() for row in rows}
+    with Session(engine) as session:
+        existing = session.execute(
+            select(MealRecord.meal_date, MealRecord.meal).where(
+                MealRecord.is_demo.is_(False),
+                MealRecord.meal_date.in_(dates),
+                func.lower(MealRecord.meal).in_(meals),
+            )
+        ).all()
+    occupied = {(record_date, record_meal.casefold()) for record_date, record_meal in existing}
+    conflicts = [
+        f"{row['meal_date'].isoformat()} {row['meal']} already has a saved real record"
+        for row in rows
+        if (row["meal_date"], row["meal"].casefold()) in occupied
+    ]
+    return conflicts[:20]
+
+
+@app.get("/records/import-template.csv", include_in_schema=False)
+def download_real_records_csv_template(_staff: str = Depends(require_staff)):
+    output = io.StringIO(newline="")
+    writer = csv.writer(output)
+    writer.writerow(
+        ["meal_date", "meal", "menu", "students", "meals_served", "prepared_portions", "food_waste_kg"]
+    )
+    return StreamingResponse(
+        iter([output.getvalue()]),
+        media_type="text/csv; charset=utf-8",
+        headers={"Content-Disposition": "attachment; filename=messmind-meal-records-template.csv"},
+    )
+
+
+async def read_real_records_csv(request: Request) -> tuple[list[dict], list[str]]:
+    content_length = request.headers.get("content-length")
+    if content_length and content_length.isdigit() and int(content_length) > CSV_IMPORT_MAX_BYTES:
+        return [], ["The CSV file is too large. The maximum size is 2 MB."]
+    chunks = []
+    total_size = 0
+    async for chunk in request.stream():
+        total_size += len(chunk)
+        if total_size > CSV_IMPORT_MAX_BYTES:
+            return [], ["The CSV file is too large. The maximum size is 2 MB."]
+        chunks.append(chunk)
+    return parse_real_records_csv(b"".join(chunks))
+
+
+@app.post("/records/import/preview")
+async def preview_real_records_csv(
+    request: Request,
+    _staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    if IS_VERCEL_DEPLOYMENT and not ALLOW_REAL_RECORDS:
+        raise HTTPException(
+            status_code=503,
+            detail="Verified-record collection is disabled until permanent storage is enabled.",
+        )
+    rows, errors = await read_real_records_csv(request)
+    if errors:
+        raise HTTPException(status_code=422, detail={"message": "CSV validation failed.", "errors": errors})
+    conflicts = check_real_record_csv_duplicates(rows)
+    if conflicts:
+        raise HTTPException(
+            status_code=409,
+            detail={"message": "Some date-and-meal slots already have real records.", "errors": conflicts},
+        )
+    return {
+        "row_count": len(rows),
+        "all_rows_will_be_real": True,
+        "preview": [
+            {
+                "meal_date": row["meal_date"].isoformat(),
+                "meal": row["meal"],
+                "menu": row["menu"],
+                "students": row["students"],
+                "meals_served": row["meals_served"],
+                "prepared_portions": row["prepared_portions"],
+                "food_waste_kg": row["food_waste_kg"],
+            }
+            for row in rows[:10]
+        ],
+    }
+
+
+@app.post("/records/import", status_code=201)
+async def import_real_records_csv(
+    request: Request,
+    _staff: str = Depends(require_staff),
+    _origin: None = Depends(require_same_origin),
+):
+    if IS_VERCEL_DEPLOYMENT and not ALLOW_REAL_RECORDS:
+        raise HTTPException(
+            status_code=503,
+            detail="Verified-record collection is disabled until permanent storage is enabled.",
+        )
+    if request.headers.get("x-messmind-confirm-real-data", "").strip().lower() != "yes":
+        raise HTTPException(
+            status_code=400,
+            detail="Confirm that this file contains approved, aggregate real meal records before importing.",
+        )
+    rows, errors = await read_real_records_csv(request)
+    if errors:
+        raise HTTPException(status_code=422, detail={"message": "CSV validation failed.", "errors": errors})
+    conflicts = check_real_record_csv_duplicates(rows)
+    if conflicts:
+        raise HTTPException(
+            status_code=409,
+            detail={"message": "Some date-and-meal slots already have real records.", "errors": conflicts},
+        )
+    saved_at = datetime.now(timezone.utc)
+    with Session(engine) as session:
+        session.add_all(
+            [MealRecord(**row, created_at=saved_at) for row in rows]
+        )
+        try:
+            session.commit()
+        except IntegrityError as error:
+            session.rollback()
+            raise HTTPException(
+                status_code=409,
+                detail="A record changed while this CSV was being imported. Refresh the page and preview it again.",
+            ) from error
+    return {"imported_rows": len(rows), "is_demo": False}
 
 
 @app.delete("/records/{record_id}", status_code=204)
